@@ -11,7 +11,7 @@ export default function Footer() {
             <h2 className="mb-6 text-3xl font-semibold">Contacts</h2>
             <div className="flex items-center gap-6 text-white/80">
               <a
-                href="https://linkedin.com"
+                href="https://nl.linkedin.com/in/milan-breuren-04223a1a5"
                 target="_blank"
                 className="hover:text-white transition"
                 aria-label="LinkedIn"
@@ -20,7 +20,7 @@ export default function Footer() {
               </a>
 
               <a
-                href="https://github.com"
+                href="https://github.com/MEvan774"
                 target="_blank"
                 className="hover:text-white transition"
                 aria-label="GitHub"
@@ -29,7 +29,7 @@ export default function Footer() {
               </a>
 
               <a
-                href="mailto:you@email.com"
+                href="mailto:milanevanbreuren@gmail.com"
                 className="hover:text-white transition"
                 aria-label="Email"
               >
