@@ -40,7 +40,7 @@ export default function Footer() {
 
           {/* Right: Contact Form */}
           <div className="rounded-xl bg-gradient-to-br from-[#1C2594] to-[#5BCAF3] p-0.5 shadow-lg w-[340] mx-auto">
-                        <div class=" h-full w-full bg-gray-900 rounded-xl p-9">
+                        <div className=" h-full w-full bg-gray-900 rounded-xl p-9">
             <h3 className="mb-6 text-2xl font-semibold ">
               Let’s get in touch!
             </h3>
