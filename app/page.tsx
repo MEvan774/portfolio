@@ -1,5 +1,6 @@
 import Image from "next/image";
 import ProjectCard from "./components/ProjectCard"
+import { projects } from "./lib/projects";
 
 export default function Home() {
   return (
@@ -58,9 +59,12 @@ export default function Home() {
 
         {/* Projects Grid */}
         <section className="grid grid-cols-3 gap-4">
-<ProjectCard />
-<ProjectCard />
-<ProjectCard />
+          {projects.map((project: { name: string; href: string; github: string; image?: string; }) => (
+            <ProjectCard
+              key={project.name}
+              project={project}
+            />
+          ))}
         </section>
 
       </div>
