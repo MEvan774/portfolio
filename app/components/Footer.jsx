@@ -5,11 +5,11 @@ import SubmitButton from "../components/SubmitButton";
 export default function Footer() {
   return (
     <footer className="bg-[#1c1c1c] text-white">
-      <div className="mx-auto max-w-screen-2xl px-6 py-24 md:px-10">
-        <div className="grid grid-cols-1 gap-16 md:grid-cols-2 items-center">
+      <div className="py-24">
+        <div className="flex flex-col gap-16 md:flex-row md:justify-between w-full max-w-2/4 mx-auto items-center">
 
           {/* Left: Contact Links */}
-          <div className="mx-auto">
+          <div>
             <h2 className="mb-6 text-3xl font-semibold">Contacts</h2>
             <div className="flex items-center gap-6 text-white/80">
               <a
@@ -41,7 +41,7 @@ export default function Footer() {
           </div>
 
           {/* Right: Contact Form */}
-          <div className="rounded-xl bg-gradient-to-br from-[#1C2594] to-[#5BCAF3] p-0.5 shadow-lg w-[340px] mx-auto">
+          <div className="rounded-xl bg-gradient-to-br from-[#1C2594] to-[#5BCAF3] p-0.5 shadow-lg w-[340px]">
             <div className="h-full w-full bg-gray-900 rounded-xl p-9">
               <h3 className="mb-6 text-2xl font-semibold">
                 Let’s get in touch!
