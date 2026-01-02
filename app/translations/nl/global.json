@@ -1,0 +1,17 @@
+{
+    "navbar": {
+        "language": "NL"
+    },
+
+    "footer": {
+        "contacts": "Contacten",
+        "form": "Laten we contact opnemen!",
+        "name": "Naam",
+        "email": "E-mail",
+        "message": "Bericht",
+        "nameplaceholder": "Voer uw naam in...",
+        "emailplaceholder": "Voer uw e-mail in...",
+        "messageplaceholder": "Voer uw bericht in...",
+        "sendMessage": "Verstuur bericht"
+    }
+}

@@ -1,0 +1,17 @@
+{
+    "navbar": {
+        "language": "ENG"
+    },
+
+    "footer": {
+        "contacts": "Contacts",
+        "form": "Let's get in touch!",
+        "name": "Name",
+        "email": "Email",
+        "message": "Message",
+        "nameplaceholder": "Enter your name...",
+        "emailplaceholder": "Enter your email...",
+        "messageplaceholder": "Enter your message...",
+        "sendMessage": "Send Message"
+    }
+}
