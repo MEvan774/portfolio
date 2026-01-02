@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Crimson_Text } from "next/font/google";
 import "./globals.css";
 import Footer from "./components/Footer";
-import Navbar from "./components/Navbar.jsx";
+import Navbar from "./components/Navbar";
 import { ThemeProvider } from "./hooks/UseTheme";
+import I18nProvider from "./components/I18nProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,9 +38,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${crimsonText.variable} antialiased`}
       >
         <ThemeProvider>
-          <Navbar />
-          {children}
-          <Footer />
+          <I18nProvider>
+            <Navbar />
+            {children}
+            <Footer />
+          </I18nProvider>
         </ThemeProvider>
       </body>
     </html>
