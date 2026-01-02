@@ -4,7 +4,7 @@ import { projects } from "./lib/projects";
 
 export default function Home() {
   return (
-    <main className="flex justify-center bg-white text-white">
+    <main className="flex justify-center transition-colors bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100">
       <div className="w-full max-w-2/4 space-y-6 py-10">
 
         {/* About Me Card */}
@@ -70,4 +70,4 @@ export default function Home() {
       </div>
     </main>
   );
-}
+ }
