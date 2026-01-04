@@ -1,19 +1,26 @@
 export type Project = {
+  slug: string;            // used for routing
   name: string;
-  href: string;
+  description: string;
   github: string;
+  live?: string;
   image?: string;
+  tech?: string[];
 };
 
 export const projects: Project[] = [
   {
+    slug: "project-one",
     name: "Project One",
-    href: "/projects/project-one",
+    description: "Short description of Project One.",
     github: "https://github.com/yourname/project-one",
+    image: "/images/projects/project-one.jpg",
+    tech: ["React", "Node.js", "Tailwind"],
   },
   {
+    slug: "project-two",
     name: "Project Two",
-    href: "/projects/project-two",
+    description: "Short description of Project Two.",
     github: "https://github.com/yourname/project-two",
   },
 ];

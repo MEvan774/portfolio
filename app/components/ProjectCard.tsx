@@ -12,7 +12,7 @@ export default function ProjectCard({ project }: Props) {
       
       {/* Clickable card area */}
       <Link
-        href={project.href}
+        href={`/projects/${project.slug}`}
         className="absolute inset-0 bg-[#cfe4f5] transition hover:brightness-95"
       >
         <span className="sr-only">

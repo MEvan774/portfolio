@@ -1,8 +1,11 @@
 import Image from "next/image";
 import ProjectCard from "./components/ProjectCard"
 import { projects } from "./lib/projects";
+import { getAllProjects } from "./lib/mdx";
 
-export default function Home() {
+export default async function Home() {
+  const allProjects = await getAllProjects();
+
   return (
     <main className="flex justify-center transition-colors bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100">
       <div className="w-full max-w-2/4 space-y-6 py-10">
@@ -24,6 +27,7 @@ export default function Home() {
                   src="/images/profile/profile.jpg"
                   alt="Profile photo"
                   fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   className="object-cover"
                   priority
                 />
@@ -59,12 +63,12 @@ export default function Home() {
 
         {/* Projects Grid */}
         <section className="grid grid-cols-3 gap-4">
-          {projects.map((project: { name: string; href: string; github: string; image?: string; }) => (
-            <ProjectCard
-              key={project.name}
-              project={project}
-            />
-          ))}
+      {projects.map((project) => (
+        <ProjectCard
+          key={project.slug}
+          project={project}
+        />
+      ))}
         </section>
 
       </div>
