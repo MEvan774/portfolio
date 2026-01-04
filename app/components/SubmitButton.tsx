@@ -9,8 +9,8 @@ export default function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="w-full rounded-md bg-blue-600 py-2 font-medium text-white transition
-                 hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+      className="w-full border-2 border-black rounded-3xl bg-[#00AFC7] py-2 font-medium text-black transition
+                 hover:bg-[#1380c8] disabled:cursor-not-allowed disabled:opacity-60"
     >
       {pending ? "Sending..." : "Send message"}
     </button>

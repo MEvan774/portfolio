@@ -10,7 +10,7 @@ export default function CodeBlock({ children }: any) {
   const language = className.replace("language-", "") || "tsx";
 
   return (
-    <div className="my-4 font-sans border border-white/20 sm:rounded-lg c"> {/* enforce site font on surrounding text */}
+    <div className="my-4 font-sans text-xs border border-2 border-black sm:rounded-lg bg-[#E9EDFF]"> {/* enforce site font on surrounding text */}
       <SyntaxHighlighter
         language={language}
         style={oneDark}
