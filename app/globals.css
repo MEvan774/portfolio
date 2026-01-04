@@ -27,3 +27,27 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Ensure the next/font variables are used as the default font */
+html, body {
+  /* next/font/google sets --font-geist-sans / --font-geist-mono / --font-crimson-text */
+  font-family: var(--font-geist-sans), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+/* Ensure MDX / Tailwind typography inherit the site font */
+.prose, .prose * {
+  font-family: inherit !important;
+}
+.prose code,
+.prose pre,
+.prose pre code,
+code,
+pre {
+  font-family: inherit !important;
+}
+
+/* Optional: if you prefer using the CSS variable instead of .className:
+html, body {
+  font-family: var(--font-geist-sans) !important;
+}
+*/

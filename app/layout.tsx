@@ -35,7 +35,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${crimsonText.variable} antialiased`}
+        className={`${geistSans.className} ${geistMono.className} ${crimsonText.className} antialiased`}
       >
         <ThemeProvider>
           <I18nProvider>
