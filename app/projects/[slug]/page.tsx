@@ -1,7 +1,7 @@
 import { getProjectBySlug } from "@/app/lib/mdx";
 import { Github } from "lucide-react";
 import { notFound } from "next/navigation";
-import { SiTypescript, SiReact, SiNextdotjs } from "react-icons/si";
+import { SiTypescript, SiReact, SiNextdotjs, SiJavascript, SiNodedotjs, SiCss3, SiHtml5 } from "react-icons/si";
 import CodeBlock from "../../components/codeBlock";
 import { MDXRemote } from "next-mdx-remote/rsc";
 
@@ -81,13 +81,60 @@ export default async function ProjectPage({ params }: Props) {
           {meta.description}
         </p>
 
-        <div className="w-full h-1 bg-black rounded-lg">
-        </div>
+        <div className="w-full h-1 bg-black rounded-lg" />
 
         <div className="flex flex-row gap-4 text-black">
-          <SiTypescript size={42} />
-          <SiReact size={42} />
-          <SiNextdotjs size={42} />
+          {/** Technologies Icons - render from frontmatter */}
+          {(() => {
+            const raw = meta.technologies ?? meta.tech ?? [];
+            const techs: string[] =
+              typeof raw === "string"
+                ? raw.split(",").map((s: string) => s.trim()).filter(Boolean)
+                : Array.isArray(raw)
+                ? raw.map((s: any) => String(s).trim()).filter(Boolean)
+                : [];
+
+            const ICON_MAP: Record<string, any> = {
+              typescript: SiTypescript,
+              ts: SiTypescript,
+              react: SiReact,
+              "next.js": SiNextdotjs,
+              nextjs: SiNextdotjs,
+              next: SiNextdotjs,
+              javascript: SiJavascript,
+              js: SiJavascript,
+              node: SiNodedotjs,
+              nodejs: SiNodedotjs,
+              css: SiCss3,
+              html: SiHtml5,
+            };
+
+            return techs.map((name) => {
+              const key = String(name).toLowerCase().replace(/\s+/g, "");
+              // try direct keys and relaxed keys
+              const lookup =
+                ICON_MAP[key] ||
+                ICON_MAP[name.toLowerCase()] ||
+                ICON_MAP[key.replace(".", "")];
+              if (lookup) {
+                const IconComp = lookup;
+                return (
+                  <span key={name} className="flex items-center">
+                    <IconComp size={42} />
+                  </span>
+                );
+              }
+              // fallback: show label
+              return (
+                <span
+                  key={name}
+                  className="inline-block px-2 py-1 text-xs font-semibold bg-black/5 rounded"
+                >
+                  {name}
+                </span>
+              );
+            });
+          })()}
         </div>
       </div>
     </section>
