@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "../hooks/UseTheme";
 import { useTranslation } from "react-i18next";
+import { useEffect, useRef } from "react";
 
 export default function Navbar() {
   const { isDark, toggle } = useTheme();
@@ -11,25 +12,34 @@ export default function Navbar() {
   const handleChangeLanguage = (lang: string) => {
     i18n.changeLanguage(lang);
   };
-  return (
-    <nav className="sticky top-0 z-50 bg-gradient-to-r from-[#1C2594] to-[#5BCAF3] p-4 shadow-md">
-      <div className="flex items-center justify-between px-8">
 
-        <div className="text-lg font-bold text-white">
+  return (
+    <nav
+      className="sticky top-5 z-50 bg-[#00AFC7] p-4 rounded-b-3xl border-4 border-black w-2/4 mx-auto shadow-[6px_6px_0_0_#000] will-change-transform"
+    >
+      <div className="flex items-center justify-between">
+        <div className="font-black text-black text-2xl">
           <Link href="/">Milan Breuren</Link>
         </div>
 
-        <div className="flex items-center gap-6 text-white">
-          <button onClick={() => handleChangeLanguage(i18n.language === "en" ? "nl" : "en")} className="text-xl font-bold hover:opacity-80">{t("navbar.language")}</button>
+        <div className="flex items-center gap-6 font-black text-black text-2xl">
+          <button
+            onClick={() =>
+              handleChangeLanguage(i18n.language === "en" ? "nl" : "en")
+            }
+            className="text-xl font-bold hover:opacity-80"
+          >
+            {t("navbar.language")}
+          </button>
 
           <button
             onClick={toggle}
             className="rounded-full p-2 hover:bg-white/20 transition"
+            aria-label="Toggle theme"
           >
             {isDark ? <Sun size={24} /> : <Moon size={24} />}
           </button>
         </div>
-
       </div>
     </nav>
   );

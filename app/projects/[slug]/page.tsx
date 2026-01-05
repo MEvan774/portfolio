@@ -21,72 +21,104 @@ export default async function ProjectPage({ params }: Props) {
     const project = getProjectBySlug(slug);
     const meta = project.data;
     return (
-<main className="flex justify-center transition-colors bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100">
-      <div className="w-full max-w-2/4 space-y-6 py-10">
+<main className="flex justify-center transition-colors bg-[#E9EDFF] dark:bg-black text-gray-900 dark:text-gray-100">
+  <div className="w-full max-w-2/4 space-y-6 py-10">
 
-        {/* About Me Card */}
-        <section className="rounded-lg bg-[#1c1c1c] p-4 shadow-md">
-          <div >
-            <h1 className="mb-3 text-sm font-semibold text-white/80 w-80 h-10">
-              {meta.title}
-            </h1>
+    {/* Project Overview Card */}
+    <section className="bg-white dark:bg-[#151A33] rounded-3xl border-4 border-black shadow-[6px_6px_0_0_#000] overflow-hidden">
+      {/* Top bar */}
+      <div className="flex items-center justify-between h-12 px-4 bg-[#00AFC7] border-b-4 border-black">
+        <h1 className="text-sm font-black text-black">
+          {meta.title}
+        </h1>
 
-            <div>
-              {/* Text */}
-              <div className="bg-white w-full h-80">
-              </div>
+        <div className="flex gap-2">
+          <span className="h-3 w-3 rounded-full bg-red-500 border-2 border-black" />
+          <span className="h-3 w-3 rounded-full bg-yellow-400 border-2 border-black" />
+          <span className="h-3 w-3 rounded-full bg-green-500 border-2 border-black" />
+        </div>
+      </div>
 
-            </div>
-          </div>
+      {/* Content */}
+      <div className="p-4">
+        <div className="bg-black w-full h-80 rounded-xl border-4 border-black" />
 
-          {/* CV Button */}
-          <div className="flex flex-row-reverse gap-2 w-full mt-4">
+        <div className="flex flex-row-reverse gap-3 w-full mt-4">
+          <a
+            href="https://github.com/MEvan774"
+            target="_blank"
+            className="hover:text-black transition text-black/80"
+            aria-label="GitHub"
+          >
+            <Github size={28} />
+          </a>
 
-                        <a
-                          href="https://github.com/MEvan774"
-                          target="_blank"
-                          className="hover:text-white transition text-white/80"
-                          aria-label="GitHub"
-                          >
-                          <Github size={28} />
-                        </a>
-          <button className="rounded bg-[#2a2a2a] px-3 py-1 text-xs text-white/80 hover:bg-[#333] transition">
+          <button className="rounded-3xl border-2 border-black bg-[#E9EDFF] px-3 py-1 text-sm font-black text-black/80 text-center hover:bg-[#DDE3FF] transition">
             Live
           </button>
-                          </div>
-        </section>
-
-        {/* Skills Card */}
-        <section className="rounded-lg bg-[#1c1c1c] p-4 shadow-md">
-          <p className="mb-3 text-sm font-semibold text-white/80">
-            {meta.description}
-          </p>
-          <h1 className="mb-3 text-sm font-semibold text-white/80">Technologies</h1>
-          <div className="h-[2px] w-full bg-white mb-5">
-                      </div>
-          <div className="flex flex-row gap-2 text-sm text-white/60">
-            {/* icons or labels */}
-            <span><SiTypescript size={42} /></span>
-            <span><SiReact size={42} /></span>
-            <span><SiNextdotjs size={42} /></span>
-
-
-          </div>
-        </section>
-
-<section className="rounded-lg bg-[#1c1c1c] p-4 shadow-md">
-  <h1 className="mb-3 text-sm font-semibold text-white/80">Code snippet</h1>
-  <article className="text-white">
-    <MDXRemote
-      source={project.content}
-      components={components}
-    />
-</article>
-</section>
-
-
+        </div>
       </div>
-    </main>
+    </section>
+
+    {/* Technologies Card */}
+    <section className="bg-white rounded-3xl border-4 border-black shadow-[6px_6px_0_0_#000] overflow-hidden">
+      {/* Top bar */}
+      <div className="flex items-center justify-between h-12 px-4 bg-[#FFD93D] border-b-4 border-black">
+        <h2 className="font-black text-black text-1xl">
+          Technologies
+        </h2>
+
+        <div className="flex gap-2">
+          <span className="h-3 w-3 rounded-full bg-red-500 border-2 border-black" />
+          <span className="h-3 w-3 rounded-full bg-yellow-400 border-2 border-black" />
+          <span className="h-3 w-3 rounded-full bg-green-500 border-2 border-black" />
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="p-4 space-y-4">
+        <p className="text-sm font-semibold text-black">
+          {meta.description}
+        </p>
+
+        <div className="w-full h-1 bg-black rounded-lg">
+        </div>
+
+        <div className="flex flex-row gap-4 text-black">
+          <SiTypescript size={42} />
+          <SiReact size={42} />
+          <SiNextdotjs size={42} />
+        </div>
+      </div>
+    </section>
+
+    {/* Code Snippet Card */}
+    <section className="bg-white rounded-3xl border-4 border-black shadow-[6px_6px_0_0_#000] overflow-hidden">
+      {/* Top bar */}
+      <div className="flex items-center justify-between h-12 px-4 bg-[#6BCB77] border-b-4 border-black">
+        <h2 className="font-black text-black text-1xl">
+          Code snippet
+        </h2>
+
+        <div className="flex gap-2">
+          <span className="h-3 w-3 rounded-full bg-red-500 border-2 border-black" />
+          <span className="h-3 w-3 rounded-full bg-yellow-400 border-2 border-black" />
+          <span className="h-3 w-3 rounded-full bg-green-500 border-2 border-black" />
+        </div>
+      </div>
+
+      {/* Content */}
+      <article className="p-4 text-black font-black">
+        <MDXRemote
+          source={project.content}
+          components={components}
+        />
+      </article>
+    </section>
+
+  </div>
+</main>
+
     );
   } catch (err) {
     console.error("Project load error:", err);
