@@ -79,12 +79,10 @@ export default function SkillsSection() {
             active:shadow-[1px_1px_0_0_#000]
           "
         >
-          <div className="overscroll-contain">
             <option value="all">All</option>
             <option value="software">Software engineer</option>
             <option value="frontend">Frontend</option>
             <option value="backend">Backend</option>
-          </div>
         </select>
 
         {/* Window dots */}
