@@ -60,23 +60,24 @@ export default function SkillsSection() {
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
           className="
-            h-8
-            rounded-xl
-            border-2 border-black
-            bg-[#E9EDFF]
-            px-3
-            text-sm
-            font-bold
-            text-black
-            outline-none
-            shadow-[3px_3px_0_0_#000]
-            transition
-            hover:translate-x-[-1px]
-            hover:translate-y-[-1px]
-            hover:shadow-[4px_4px_0_0_#000]
-            active:translate-x-[1px]
-            active:translate-y-[1px]
-            active:shadow-[1px_1px_0_0_#000]
+    h-8
+    w-44
+    rounded-xl
+    border-2 border-black
+    bg-[#E9EDFF]
+    px-3
+    text-sm
+    font-bold
+    text-black
+    outline-none
+    shadow-[3px_3px_0_0_#000]
+    transition
+    hover:translate-x-[-1px]
+    hover:translate-y-[-1px]
+    hover:shadow-[4px_4px_0_0_#000]
+    active:translate-x-[1px]
+    active:translate-y-[1px]
+    active:shadow-[1px_1px_0_0_#000]
           "
         >
             <option value="all">All</option>
@@ -93,22 +94,26 @@ export default function SkillsSection() {
         </div>
       </div>
 
-      {/* Content */}
-      <div className="p-4 flex-1 h-80"> {/* fills remaining fixed section height and scrolls */}
-        <ul className="flex flex-col gap-3">
-          {filteredSkills.map((skill) => (
-            <li
-              key={skill.label}
-              className="flex items-center gap-3 font-bold text-black"
-            >
-              <span className="h-8 w-8 flex items-center justify-center">
-                {skill.icon}
-              </span>
-              <span>{skill.label}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
+{/* Content */}
+<div className="f  flex-1
+  overflow-y-scroll
+  p-4
+  pr-2
+  scrollbar-gutter-stable">
+  <ul className="flex flex-col gap-3">
+    {filteredSkills.map((skill) => (
+      <li
+        key={skill.label}
+        className="flex items-center gap-3 font-bold text-black"
+      >
+        <span className="h-8 w-8 flex items-center justify-center shrink-0">
+          {skill.icon}
+        </span>
+        <span>{skill.label}</span>
+      </li>
+    ))}
+  </ul>
+</div>
     </section>
   );
 }

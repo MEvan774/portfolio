@@ -15,7 +15,7 @@ export default function Navbar() {
 
   return (
     <nav
-      className="sticky top-5 z-50 bg-[#00AFC7] p-4 rounded-b-3xl border-4 border-black w-2/4 mx-auto shadow-[6px_6px_0_0_#000] will-change-transform"
+      className="sticky top-5 z-50 bg-[#00AFC7] p-4 rounded-b-3xl border-4 border-black sm:w-2/4 max-w-6xl sm:mx-auto mx-4 shadow-[6px_6px_0_0_#000] will-change-transform"
     >
       <div className="flex items-center justify-between">
         <div className="font-black text-black text-2xl">

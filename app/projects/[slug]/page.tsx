@@ -34,7 +34,7 @@ const media =
     : [];
     return (
 <main className="flex justify-center transition-colors bg-[#E9EDFF] dark:bg-black text-gray-900 dark:text-gray-100">
-  <div className="w-full max-w-2/4 space-y-6 py-10">
+  <div className="w-full sm:max-w-2/4 max-w-6xl px-4 sm:px-6 lg:px-0 space-y-6 py-10">
 
     {/* Project Overview Card */}
     <section className="bg-white dark:bg-[#151A33] rounded-3xl border-4 border-black shadow-[6px_6px_0_0_#000] overflow-hidden">
