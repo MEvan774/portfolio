@@ -1,6 +1,7 @@
 import { Github, Linkedin, Mail } from "lucide-react";
 import { sendEmail } from "../components/actions/sendEmail";
 import SubmitButton from "../components/SubmitButton";
+import ScrollToTopButton from "./ScrollToTopButton";
 
 export default function Footer() {
   return (
@@ -91,7 +92,9 @@ export default function Footer() {
 
             </div>
           </div>
-
+<div className="flex justify-center">
+  <ScrollToTopButton />
+</div>
         </div>
     </footer>
   );

@@ -71,3 +71,38 @@ header {
 .has-fixed-navbar .page-wrapper { /* .page-wrapper if you wrap your pages */
   padding-top: calc(var(--navbar-height) + var(--navbar-top-gap));
 }
+
+/* === Neo-Brutalist Scrollbar === */
+::-webkit-scrollbar {
+  width: 14px;
+  border-radius: 17px;
+}
+
+::-webkit-scrollbar-track {
+  background: #e9edff;
+  border-left: 4px solid black;
+}
+
+::-webkit-scrollbar-thumb {
+  background: black;
+  border: 3px solid #e9edff;
+    border-radius: 17px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #111;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: #000;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thick;
+  scrollbar-color: black #e9edff;
+}
+
+.scrollbar-gutter-stable {
+  scrollbar-gutter: stable;
+}
