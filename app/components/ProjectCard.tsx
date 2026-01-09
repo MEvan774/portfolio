@@ -9,7 +9,8 @@ type Props = {
 export default function ProjectCard({ project }: Props) {
   return (
     <div className="group relative aspect-square overflow-hidden mt-4 rounded-xl border-4 border-black bg-[#E9EDFF] shadow-[6px_6px_0_0_#000]
-  absolute inset-0
+  dark:border-[#00AFC7]
+    absolute inset-0
   bg-[#cfe4f5]
   transition-all duration-150 ease-out
   shadow-[6px_6px_0_0_#000]
@@ -26,7 +27,7 @@ export default function ProjectCard({ project }: Props) {
       {/* Clickable card area */}
       <Link
         href={`/projects/${project.slug}`}
-        className="absolute inset-0 bg-[#cfe4f5] transition hover:brightness-95"
+        className="absolute inset-0 bg-[#cfe4f5] dark:bg-black transition hover:brightness-95"
       >
         <span className="sr-only">
           View {project.name}
@@ -34,7 +35,7 @@ export default function ProjectCard({ project }: Props) {
       </Link>
 
       {/* Bottom bar */}
-      <div className=" border-t-2 border-black pointer-events-none absolute bottom-0 left-0 right-0 flex items-center justify-between bg-[#00AFC7] px-3 py-2 text-white">
+      <div className=" border-t-2 border-black dark:border-[#00AFC7] pointer-events-none absolute bottom-0 left-0 right-0 flex items-center justify-between bg-[#00AFC7] px-3 py-2 text-white">
         <span className="text-s font-bold text-black">
           {project.name}
         </span>

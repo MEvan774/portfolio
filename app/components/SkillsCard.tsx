@@ -47,9 +47,9 @@ export default function SkillsSection() {
         );
 
   return (
-    <section className="bg-white rounded-3xl border-4 border-black shadow-[6px_6px_0_0_#000] overflow-hidden flex flex-col h-72 md:h-80">
+    <section className="bg-white dark:border-[#00AFC7] dark:bg-black rounded-3xl border-4 border-black shadow-[6px_6px_0_0_#000] overflow-hidden flex flex-col h-72 md:h-80">
       {/* Top bar */}
-      <div className="flex items-center justify-between h-12 px-4 bg-[#00AFC7] border-b-4 border-black">
+      <div className="flex items-center justify-between h-12 px-4 bg-[#00AFC7] border-b-4 border-black dark:border-[#00AFC7]">
         {/* Title */}
         <h2 className="font-black text-lg text-black">
           Skills
@@ -64,7 +64,10 @@ export default function SkillsSection() {
     w-44
     rounded-xl
     border-2 border-black
+    dark:border-[#00AFC7]
     bg-[#E9EDFF]
+    dark:bg-black
+    dark:text-[#00AFC7]
     px-3
     text-sm
     font-bold
@@ -104,7 +107,7 @@ export default function SkillsSection() {
     {filteredSkills.map((skill) => (
       <li
         key={skill.label}
-        className="flex items-center gap-3 font-bold text-black"
+        className="flex items-center gap-3 font-bold text-black dark:text-[#00AFC7]"
       >
         <span className="h-8 w-8 flex items-center justify-center shrink-0">
           {skill.icon}

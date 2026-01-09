@@ -72,37 +72,46 @@ header {
   padding-top: calc(var(--navbar-height) + var(--navbar-top-gap));
 }
 
-/* === Neo-Brutalist Scrollbar === */
+/* === Neo-Brutalist Scrollbar (Dark-Mode Aware) === */
 ::-webkit-scrollbar {
   width: 14px;
-  border-radius: 17px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #e9edff;
-  border-left: 4px solid black;
+  background: var(--scrollbar-track);
+  border-left: 4px solid var(--scrollbar-border);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: black;
-  border: 3px solid #e9edff;
-    border-radius: 17px;
+  background: var(--scrollbar-thumb);
+  border: 3px solid var(--scrollbar-track);
+  border-radius: 17px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #111;
+  background: var(--scrollbar-thumb-hover);
 }
 
 ::-webkit-scrollbar-thumb:active {
-  background: #000;
+  background: var(--scrollbar-thumb);
 }
 
 /* Firefox */
 * {
   scrollbar-width: thick;
-  scrollbar-color: black #e9edff;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
-.scrollbar-gutter-stable {
-  scrollbar-gutter: stable;
+:root {
+  --scrollbar-track: white;
+  --scrollbar-thumb: #000000;
+  --scrollbar-thumb-hover: #111111;
+  --scrollbar-border: #000000;
+}
+
+.dark {
+  --scrollbar-track: black; /* dark slate / near-black */
+  --scrollbar-thumb: #00AFC7; /* light gray */
+  --scrollbar-thumb-hover: #00AFC7;
+  --scrollbar-border: #e5e7eb;
 }

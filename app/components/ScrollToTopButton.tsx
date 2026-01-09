@@ -19,11 +19,14 @@ export default function ScrollToTopButton() {
         rounded-2xl
         border-4
         border-black
+        dark:border-[#00AFC7]
         bg-white
+        dark:bg-black
         px-6
         py-3
         font-black
         text-black
+        dark:text-[#00AFC7]
         shadow-[4px_4px_0_0_#000]
         transition
         active:translate-x-[2px]

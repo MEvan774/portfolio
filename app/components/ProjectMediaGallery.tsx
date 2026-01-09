@@ -25,7 +25,7 @@ export default function ProjectMediaGallery({
   return (
     <div className="flex flex-col gap-3 w-full">
       {/* MAIN VIEWER */}
-      <div className="relative w-full sm:h-110 h-50 border-4 border-black rounded-xl overflow-hidden bg-gray-900">
+      <div className="relative w-full sm:h-110 h-50 border-4 border-black dark:border-[#00AFC7] rounded-xl overflow-hidden bg-gray-900">
         {active.type === "image" ? (
           <Image
             src={active.src}
@@ -62,7 +62,7 @@ export default function ProjectMediaGallery({
               className={`
                 relative
                 shrink-0
-                border-4 border-black
+                border-4 border-black dark:border-[#00AFC7]
                 rounded-lg
                 overflow-hidden
                 bg-gray-200
