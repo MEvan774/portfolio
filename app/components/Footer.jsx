@@ -5,18 +5,18 @@ import ScrollToTopButton from "./ScrollToTopButton";
 
 export default function Footer() {
   return (
-    <footer className="bg-[#DDE3FF] text-black border-t-4 border-black">
+    <footer className="bg-[#DDE3FF] dark:bg-black text-black border-t-4 border-black dark:border-[#00AFC7]">
       <div className="py-24">
         <div className="flex flex-col gap-16 md:flex-row md:justify-between w-full max-w-2/4 mx-auto items-center">
 
           {/* Left: Contact Links */}
           <div>
-            <h2 className="mb-6 text-3xl font-semibold">Contacts</h2>
-            <div className="flex items-center gap-6 text-black">
+            <h2 className="mb-6 text-3xl font-semibold dark:text-[#00AFC7]">Contacts</h2>
+            <div className="flex items-center gap-6 text-black dark:text-[#00AFC7]">
               <a
                 href="https://nl.linkedin.com/in/milan-breuren-04223a1a5"
                 target="_blank"
-                className="hover:text-black transition"
+                className="dark:text-[#00AFC7] dark:hover:text-[#00AFC7] hover:text-black transition"
                 aria-label="LinkedIn"
               >
                 <Linkedin size={28} />
@@ -25,7 +25,7 @@ export default function Footer() {
               <a
                 href="https://github.com/MEvan774"
                 target="_blank"
-                className="hover:text-black transition"
+                className="dark:text-[#00AFC7] dark:hover:text-[#00AFC7] hover:text-black transition"
                 aria-label="GitHub"
               >
                 <Github size={28} />
@@ -33,7 +33,7 @@ export default function Footer() {
 
               <a
                 href="mailto:milanevanbreuren@gmail.com"
-                className="hover:text-black transition"
+                className="dark:text-[#00AFC7] dark:hover:text-[#00AFC7] hover:text-black transition"
                 aria-label="Email"
               >
                 <Mail size={28} />
@@ -42,14 +42,14 @@ export default function Footer() {
           </div>
 
           {/* Right: Contact Form */}
-          <div className="text-black border-4 border-black rounded-xl bg-white p-9 shadow-[4px_4px_0_0_#000] w-[340px]">
+          <div className="text-black border-4 border-black dark:border-[#00AFC7] dark:bg-black dark:text-[#00AFC7] rounded-xl bg-white p-9 shadow-[4px_4px_0_0_#000] w-[340px]">
               <h3 className="mb-6 text-2xl font-bold">
                 Let’s get in touch!
               </h3>
 
               <form action={sendEmail} className="space-y-5">
                 <div>
-                  <label className="mb-1 block text-sm text-black font-bold">
+                  <label className="mb-1 block text-sm text-black font-bold dark:text-[#00AFC7]">
                     Name
                   </label>
                   <input
@@ -57,12 +57,12 @@ export default function Footer() {
                     type="text"
                     required
                     placeholder="Enter your name..."
-                    className="w-full border-2 border-black rounded-xl bg-white px-3 py-2 text-black outline-none focus:ring-2 focus:ring-black"
+                    className="w-full border-2 border-black rounded-xl bg-white px-3 py-2 text-black outline-none focus:ring-2 focus:ring-black dark:focus:ring-[#00AFC7] dark:text-[#00AFC7] dark:border-[#00AFC7] dark:bg-black"
                   />
                 </div>
 
                 <div>
-                  <label className="mb-1 block text-sm text-black font-bold">
+                  <label className="mb-1 block text-sm text-black font-bold dark:text-[#00AFC7]">
                     Email
                   </label>
                   <input
@@ -70,12 +70,12 @@ export default function Footer() {
                     type="email"
                     required
                     placeholder="Enter your email..."
-                    className="w-full border-2 border-black rounded-xl bg-white px-3 py-2 text-black outline-none focus:ring-2 focus:ring-black"
+                    className="w-full border-2 border-black rounded-xl bg-white px-3 py-2 text-black outline-none focus:ring-2 focus:ring-black dark:focus:ring-[#00AFC7] dark:text-[#00AFC7] dark:border-[#00AFC7] dark:bg-black"
                   />
                 </div>
 
                 <div>
-                  <label className="mb-1 block text-sm text-black font-bold">
+                  <label className="mb-1 block text-sm text-black font-bold dark:text-[#00AFC7]">
                     Message
                   </label>
                   <textarea
@@ -83,7 +83,7 @@ export default function Footer() {
                     rows={4}
                     required
                     placeholder="Enter your message..."
-                    className="w-full border-2 border-black rounded-xl bg-white px-3 py-2 text-black outline-none focus:ring-2 focus:ring-black"
+                    className="w-full border-2 border-black rounded-xl bg-white px-3 py-2 text-black outline-none focus:ring-2 focus:ring-black dark:focus:ring-[#00AFC7] dark:text-[#00AFC7] dark:border-[#00AFC7] dark:bg-black"
                   />
                 </div>
 
