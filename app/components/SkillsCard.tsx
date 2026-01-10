@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { SiTypescript, SiReact, SiNextdotjs, SiHtml5, SiCss3, SiJavascript, SiNodedotjs} from "react-icons/si";
+import { useLanguage } from "@/app/hooks/UseLanguage";
 
 const SKILLS = [
   {
@@ -37,6 +38,7 @@ const SKILLS = [
 ];
 
 export default function SkillsSection() {
+  const { t } = useLanguage();
   const [filter, setFilter] = useState("all");
 
   const filteredSkills =
@@ -52,7 +54,7 @@ export default function SkillsSection() {
       <div className="flex items-center justify-between h-12 px-4 bg-[#00AFC7] border-b-4 border-black dark:border-[#00AFC7]">
         {/* Title */}
         <h2 className="font-black text-lg text-black">
-          Skills
+          {t("landingPage.skills")}
         </h2>
 
         {/* Dropdown */}
@@ -83,7 +85,7 @@ export default function SkillsSection() {
     active:shadow-[1px_1px_0_0_#000]
           "
         >
-            <option value="all">All</option>
+            <option value="all">{t("landingPage.dropdown")}</option>
             <option value="software">Software engineer</option>
             <option value="frontend">Frontend</option>
             <option value="backend">Backend</option>

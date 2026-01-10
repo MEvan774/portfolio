@@ -2,16 +2,26 @@
     "navbar": {
         "language": "ENG"
     },
-
+        "landingPage": {
+        "aboutMe": "About me",
+        "aboutMeContent": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed doeiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+        "skills": "Skills",
+        "dropdown": "All"
+    },
+        "projectPage": {
+        "technologies": "technologies",
+        "codeSnippet": "codeSnippet"
+    },
     "footer": {
         "contacts": "Contacts",
         "form": "Let's get in touch!",
         "name": "Name",
         "email": "Email",
         "message": "Message",
-        "nameplaceholder": "Enter your name...",
-        "emailplaceholder": "Enter your email...",
-        "messageplaceholder": "Enter your message...",
-        "sendMessage": "Send Message"
+        "namePlaceholder": "Enter your name...",
+        "emailPlaceholder": "Enter your email...",
+        "messagePlaceholder": "Enter your message...",
+        "sendMessage": "Send Message",
+        "pendingMessage": "Sending..."
     }
 }

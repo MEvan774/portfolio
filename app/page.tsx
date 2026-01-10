@@ -3,9 +3,11 @@ import ProjectCard from "./components/ProjectCard";
 import { projects } from "./lib/projects";
 import { getAllProjects } from "./lib/mdx";
 import SkillsSection from "./components/SkillsCard";
+import { getServerTranslations } from "../app/lib/ServerTranslations";
 
 export default async function Home() {
   const allProjects = await getAllProjects();
+      const { t } = await getServerTranslations();
 
   return (
     <main className="flex justify-center bg-[#E9EDFF] text-gray-900 dark:bg-black dark:text-gray-100 transition-colors">
@@ -37,7 +39,7 @@ export default async function Home() {
             dark:border-[#00AFC7]
           ">
             <h1 className="font-black text-base sm:text-lg text-black">
-              About me
+              {t("landingPage.aboutMe")}
             </h1>
 
             <div className="flex gap-2">
@@ -53,10 +55,7 @@ export default async function Home() {
 
               {/* Text */}
               <p className="text-sm font-semibold text-black md:w-3/5 dark:text-[#00AFC7]">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex ea commodo consequat.
+                {t("landingPage.aboutMeContent")}
               </p>
 
               {/* Image */}
