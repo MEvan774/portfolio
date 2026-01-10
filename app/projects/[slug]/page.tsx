@@ -5,6 +5,8 @@ import { SiTypescript, SiReact, SiNextdotjs, SiJavascript, SiNodedotjs, SiCss3, 
 import CodeBlock from "../../components/codeBlock";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import ProjectMediaGallery from "@/app/components/ProjectMediaGallery";
+import { getServerTranslations } from "../../lib/ServerTranslations";
+
 
 type Props = { params: Promise<{ slug: string }> | { slug: string } };
 
@@ -19,6 +21,8 @@ type MediaItem = {
 };
 
 export default async function ProjectPage({ params }: Props) {
+    const { t } = await getServerTranslations();
+
   const resolved = await params; // <- important for Turbopack / latest App Router
   const slug = resolved?.slug;
   if (!slug) return notFound();
@@ -78,7 +82,7 @@ const media =
       {/* Top bar */}
       <div className="flex items-center justify-between h-12 px-4 bg-[#FFD93D] border-b-4 border-black dark:bg-[#00AFC7] dark:border-[#00AFC7]">
         <h2 className="font-black text-black text-1xl">
-          Technologies
+          {t("projectPage.technologies")}
         </h2>
 
         <div className="flex gap-2">
@@ -157,7 +161,7 @@ const media =
       {/* Top bar */}
       <div className="flex items-center justify-between h-12 px-4 bg-[#6BCB77] border-b-4 border-black dark:bg-[#00AFC7]">
         <h2 className="font-black text-black text-1xl">
-          Code snippet
+          {t("projectPage.codeSnippet")}
         </h2>
 
         <div className="flex gap-2">

@@ -2,16 +2,26 @@
     "navbar": {
         "language": "NL"
     },
-
+        "landingPage": {
+        "aboutMe": "Over mij",
+        "aboutMeContent": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed doeiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+        "skills": "Vaardigheden",
+        "dropdown": "Alles"
+    },
+        "projectPage": {
+        "technologies": "technologieën",
+        "codeSnippet": "codeFragment"
+    },
     "footer": {
         "contacts": "Contacten",
         "form": "Laten we contact opnemen!",
         "name": "Naam",
         "email": "E-mail",
         "message": "Bericht",
-        "nameplaceholder": "Voer uw naam in...",
-        "emailplaceholder": "Voer uw e-mail in...",
-        "messageplaceholder": "Voer uw bericht in...",
-        "sendMessage": "Verstuur bericht"
+        "namePlaceholder": "Voer uw naam in...",
+        "emailPlaceholder": "Voer uw e-mail in...",
+        "messagePlaceholder": "Voer uw bericht in...",
+        "sendMessage": "Verstuur bericht",
+        "pendingMessage": "Versturen..."
     }
 }
