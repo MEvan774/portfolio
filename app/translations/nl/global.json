@@ -23,5 +23,9 @@
         "messagePlaceholder": "Voer uw bericht in...",
         "sendMessage": "Verstuur bericht",
         "pendingMessage": "Versturen..."
+    },
+
+    "3DToggle": {
+        "ClickMe": "KLIK MIJ!"
     }
 }

@@ -24,9 +24,10 @@ export default function Navbar() {
             {t("navbar.language")}
           </button>
 
+          {/* Hidden on desktop (md and up), visible on mobile only */}
           <button
             onClick={toggle}
-            className="rounded-full p-2 hover:bg-white/20 transition"
+            className="rounded-full p-2 hover:bg-white/20 transition md:hidden"
             aria-label="Toggle theme"
           >
             {isDark ? <Sun size={24} /> : <Moon size={24} />}

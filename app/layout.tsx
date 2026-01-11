@@ -6,6 +6,7 @@ import Navbar from "./components/Navbar";
 import { ThemeProvider } from "./hooks/UseTheme";
 import I18nProvider from "./components/I18nProvider";
 import { IBM_Plex_Mono } from "next/font/google";
+import DarkModeToggle3D from "./components/DarkModeToggle3D";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -50,7 +51,7 @@ export default function RootLayout({
                 <Navbar />
               </div>
             </header>
-
+            <DarkModeToggle3D modelPath="/models/LowPolyMonitor.glb" />
             {children}
             <Footer />
           </I18nProvider>

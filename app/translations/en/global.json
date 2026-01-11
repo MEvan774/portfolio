@@ -23,5 +23,9 @@
         "messagePlaceholder": "Enter your message...",
         "sendMessage": "Send Message",
         "pendingMessage": "Sending..."
+    },
+
+    "3DToggle": {
+        "ClickMe": "CLICK ME!"
     }
 }
