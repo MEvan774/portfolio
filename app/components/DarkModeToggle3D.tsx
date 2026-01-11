@@ -7,11 +7,13 @@ import { useLanguage } from "@/app/hooks/UseLanguage";
 
 interface DarkModeToggle3DProps {
   modelPath?: string;
+  fallbackImagePath?: string;
   style?: React.CSSProperties;
 }
 
 const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({ 
   modelPath = '/models/LowPolyMonitor.glb',
+  fallbackImagePath = '/images/alt/MonitorFallback.png', // Add your fallback image path
   style 
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -24,7 +26,8 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
   const [isHovered, setIsHovered] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false); // NEW: Track animation state
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [loadError, setLoadError] = useState(false); // NEW: Track load error
   const floatOffset = useRef(0);
   const { t } = useLanguage();
   const { isDark, toggle, mounted } = useTheme();
@@ -116,12 +119,15 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
         scene.add(model);
         
         setIsLoaded(true);
+        setLoadError(false);
       },
       (progress) => {
         console.log(`Loading: ${(progress.loaded / progress.total * 100).toFixed(0)}%`);
       },
       (error) => {
-        console.error('Error loading model:', error);
+        console.error('Error loading 3D model:', error);
+        setLoadError(true); // Set error state
+        setIsLoaded(true); // Consider it "loaded" so loading text disappears
       }
     );
 
@@ -216,6 +222,116 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
     }
   };
 
+  // If model failed to load, show fallback image
+  if (loadError) {
+    return (
+      <div
+        style={{
+          position: 'fixed',
+          top: isMobile ? 'auto' : '20px',
+          bottom: isMobile ? '20px' : 'auto',
+          right: '20px',
+          zIndex: 1000,
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'flex-end',
+          gap: '12px',
+          flexWrap: 'nowrap',
+          opacity: mounted ? 1 : 0,
+          transition: 'opacity 0.3s ease',
+        }}
+      >
+        {/* Neo-brutalist vertical card - Desktop only */}
+        {!isMobile && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              pointerEvents: 'auto',
+            }}
+          >
+            <div
+              style={{
+                position: 'relative',
+                width: '50px',
+                height: '180px',
+                backgroundColor: '#00AFC7',
+                border: '4px solid #000000',
+                boxShadow: '6px 8px 0px #000000',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 999,
+              }}
+            >
+              <div
+                style={{
+                  writingMode: 'vertical-rl',
+                  textOrientation: 'mixed',
+                  fontSize: '18px',
+                  fontWeight: '900',
+                  color: '#000000',
+                  letterSpacing: '1px',
+                  textTransform: 'uppercase',
+                  userSelect: 'none',
+                }}
+              >
+                {t("3DToggle.ClickMe")}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Fallback Image */}
+        <div
+          onClick={handleClick}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          style={{
+            position: 'relative',
+            width: isMobile ? '80px' : '160px',
+            height: isMobile ? '80px' : '160px',
+            cursor: 'pointer',
+            transition: 'transform 0.3s ease',
+            transform: isHovered && !isAnimating ? 'scale(1.1) rotate(0deg)' : 'scale(1) rotate(0deg)',
+            pointerEvents: 'auto',
+            opacity: isAnimating ? 0.8 : 1,
+            animation: isAnimating ? 'spin 0.7s ease-in-out' : 'none',
+            ...style,
+          }}
+          aria-label="Toggle dark mode"
+          role="button"
+          tabIndex={0}
+          onKeyDown={handleKeyDown}
+        >
+          <img
+            src={fallbackImagePath}
+            alt="Dark mode toggle"
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+              filter: isDark ? 'brightness(0.9)' : 'brightness(1)',
+              transition: 'filter 0.3s ease',
+            }}
+          />
+          <style jsx>{`
+            @keyframes spin {
+              from {
+                transform: rotate(0deg);
+              }
+              to {
+                transform: rotate(360deg);
+              }
+            }
+          `}</style>
+        </div>
+      </div>
+    );
+  }
+
+  // Normal 3D model render
   return (
     <div
       style={{
@@ -286,11 +402,11 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
           position: 'relative',
           width: isMobile ? '80px' : '160px',
           height: isMobile ? '80px' : '160px',
-          cursor: isLoaded && !isAnimating ? 'pointer' : 'default', // Change cursor during animation
+          cursor: isLoaded && !isAnimating ? 'pointer' : 'default',
           transition: 'transform 0.3s ease',
-          transform: isHovered && !isAnimating ? 'scale(1.1)' : 'scale(1)', // Disable hover scale during animation
+          transform: isHovered && !isAnimating ? 'scale(1.1)' : 'scale(1)',
           pointerEvents: 'auto',
-          opacity: isAnimating ? 0.8 : 1, // Slight transparency during animation
+          opacity: isAnimating ? 0.8 : 1,
           ...style,
         }}
         aria-label="Toggle dark mode"
