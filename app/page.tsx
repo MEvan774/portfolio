@@ -4,12 +4,15 @@ import { projects } from "./lib/projects";
 import { getAllProjects } from "./lib/mdx";
 import SkillsSection from "./components/SkillsCard";
 import { getServerTranslations } from "../app/lib/ServerTranslations";
+import PageReadyNotifier from "./components/PageReadyNotifier";
 
 export default async function Home() {
   const allProjects = await getAllProjects();
-      const { t } = await getServerTranslations();
+  const { t } = await getServerTranslations();
 
   return (
+    <>
+      <PageReadyNotifier /> 
     <main className="flex justify-center bg-[#E9EDFF] text-gray-900 dark:bg-black dark:text-gray-100 transition-colors">
       <div className="sm:max-w-2/4 max-w-6xl px-4 sm:px-6 lg:px-0 space-y-6 py-10">
 
@@ -124,5 +127,6 @@ export default async function Home() {
 
       </div>
     </main>
+          </>
   );
 }

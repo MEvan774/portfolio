@@ -1,17 +1,11 @@
-// app/components/TransitionCanvasWrapper.tsx
+// app/components/TransitionCanvasWrapper.tsx - FIXED for proper in/out transitions
 "use client";
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTransition } from '../context/TransitionContext';
-
-// Import your shader sources
 import { vertexShaderSource, fragmentShaderSource } from '../shaders/DotTransitionShader.glsl';
 import styles from './TransitionCanvas.module.css';
 
-/**
- * Wrapper that manages the WebGL canvas and connects to TransitionContext
- * Place this in your root layout
- */
 export default function TransitionCanvasWrapper() {
   const { isTransitioning, config } = useTransition();
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -21,8 +15,10 @@ export default function TransitionCanvasWrapper() {
     buffer: WebGLBuffer;
   } | null>(null);
   const animationFrameRef = useRef<number | null>(null);
-  const startTimeRef = useRef<number>(0);
-  const isTransitioningInRef = useRef(false);
+  const [animationState, setAnimationState] = useState<'idle' | 'in' | 'hold' | 'out'>('idle');
+  const [progress, setProgress] = useState(0);
+  const startTimeRef = useRef(0);
+  const phaseRef = useRef<'in' | 'out'>('in');
 
   // Initialize WebGL
   useEffect(() => {
@@ -35,7 +31,6 @@ export default function TransitionCanvasWrapper() {
       return;
     }
 
-    // Compile shaders
     const compileShader = (type: number, source: string): WebGLShader | null => {
       const shader = gl.createShader(type);
       if (!shader) return null;
@@ -57,7 +52,6 @@ export default function TransitionCanvasWrapper() {
 
     if (!vertexShader || !fragmentShader) return;
 
-    // Create program
     const program = gl.createProgram();
     if (!program) return;
 
@@ -72,7 +66,6 @@ export default function TransitionCanvasWrapper() {
 
     gl.useProgram(program);
 
-    // Set up geometry
     const positions = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]);
     const buffer = gl.createBuffer();
     if (!buffer) return;
@@ -116,68 +109,92 @@ export default function TransitionCanvasWrapper() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Handle transition state changes
+  useEffect(() => {
+    if (isTransitioning) {
+      console.log('🎬 Canvas: Starting transition IN');
+      setAnimationState('in');
+      phaseRef.current = 'in';
+      setProgress(0);
+      startTimeRef.current = performance.now();
+    } else if (animationState !== 'idle') {
+      console.log('🎬 Canvas: Starting transition OUT');
+      setAnimationState('out');
+      phaseRef.current = 'out';
+      setProgress(1);
+      startTimeRef.current = performance.now();
+    }
+  }, [isTransitioning]);
+
+  // Render function
+  const render = (currentProgress: number) => {
+    const canvas = canvasRef.current;
+    const resources = glResourcesRef.current;
+
+    if (!canvas || !resources) return;
+
+    const { gl, program } = resources;
+    const { spacing = 25, dotSize = 1.0, dotColor = [0, 0, 0] } = config;
+
+    gl.clearColor(0, 0, 0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    gl.uniform2f(gl.getUniformLocation(program, 'u_resolution'), canvas.width, canvas.height);
+    gl.uniform1f(gl.getUniformLocation(program, 'u_spacing'), spacing);
+    gl.uniform1f(gl.getUniformLocation(program, 'u_animation_progress'), currentProgress);
+    gl.uniform1f(gl.getUniformLocation(program, 'u_dot_size'), dotSize);
+    gl.uniform3f(
+      gl.getUniformLocation(program, 'u_dot_color'),
+      dotColor[0],
+      dotColor[1],
+      dotColor[2]
+    );
+
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  };
+
   // Animation loop
   useEffect(() => {
-    if (!isTransitioning) return;
+    if (animationState === 'idle') return;
 
-    isTransitioningInRef.current = true;
-    startTimeRef.current = performance.now();
-
-    const { spacing = 25, dotSize = 1.0, dotColor = [0, 0, 0], speed = 600 } = config;
-
-    const render = (progress: number) => {
-      const canvas = canvasRef.current;
-      const resources = glResourcesRef.current;
-
-      if (!canvas || !resources) return;
-
-      const { gl, program } = resources;
-
-      gl.clearColor(0, 0, 0, 0);
-      gl.clear(gl.COLOR_BUFFER_BIT);
-
-      // Set uniforms
-      gl.uniform2f(gl.getUniformLocation(program, 'u_resolution'), canvas.width, canvas.height);
-      gl.uniform1f(gl.getUniformLocation(program, 'u_spacing'), spacing);
-      gl.uniform1f(gl.getUniformLocation(program, 'u_animation_progress'), progress);
-      gl.uniform1f(gl.getUniformLocation(program, 'u_dot_size'), dotSize);
-      gl.uniform3f(
-        gl.getUniformLocation(program, 'u_dot_color'),
-        dotColor[0],
-        dotColor[1],
-        dotColor[2]
-      );
-
-      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-    };
+    const speed = config.speed || 600;
 
     const animate = (currentTime: number) => {
       const elapsed = currentTime - startTimeRef.current;
-      const progress = Math.min(elapsed / speed, 1);
+      const rawProgress = Math.min(elapsed / speed, 1);
 
-      render(progress);
+      let currentProgress: number;
 
-      if (progress < 1) {
-        animationFrameRef.current = requestAnimationFrame(animate);
-      } else {
-        if (isTransitioningInRef.current) {
-          // Transition in complete, start transition out
-          isTransitioningInRef.current = false;
-          startTimeRef.current = performance.now();
+      if (animationState === 'in') {
+        // Transition IN: 0 → 1
+        currentProgress = rawProgress;
+        setProgress(currentProgress);
+        render(currentProgress);
 
-          const animateOut = (currentTime: number) => {
-            const elapsed = currentTime - startTimeRef.current;
-            const progress = Math.min(elapsed / speed, 1);
-
-            render(1 - progress);
-
-            if (progress < 1) {
-              animationFrameRef.current = requestAnimationFrame(animateOut);
-            }
-          };
-
-          animationFrameRef.current = requestAnimationFrame(animateOut);
+        if (rawProgress < 1) {
+          animationFrameRef.current = requestAnimationFrame(animate);
+        } else {
+          console.log('⚫ Canvas: Transition IN complete (screen covered)');
+          setAnimationState('hold');
+          render(1); // Keep at 1 (fully covered)
         }
+      } else if (animationState === 'out') {
+        // Transition OUT: 1 → 0
+        currentProgress = 1 - rawProgress;
+        setProgress(currentProgress);
+        render(currentProgress);
+
+        if (rawProgress < 1) {
+          animationFrameRef.current = requestAnimationFrame(animate);
+        } else {
+          console.log('✨ Canvas: Transition OUT complete (screen revealed)');
+          setAnimationState('idle');
+          setProgress(0);
+          render(0);
+        }
+      } else if (animationState === 'hold') {
+        // Just keep rendering at 1 (fully covered)
+        render(1);
       }
     };
 
@@ -188,12 +205,14 @@ export default function TransitionCanvasWrapper() {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [isTransitioning, config]);
+  }, [animationState, config]);
 
   return (
     <canvas
       ref={canvasRef}
-      className={`${styles.canvas} ${isTransitioning ? styles.active : ''}`}
+      className={`${styles.canvas} ${
+        animationState !== 'idle' ? styles.active : ''
+      }`}
     />
   );
 }

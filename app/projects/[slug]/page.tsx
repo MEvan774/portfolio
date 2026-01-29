@@ -6,6 +6,7 @@ import CodeBlock from "../../components/codeBlock";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import ProjectMediaGallery from "@/app/components/ProjectMediaGallery";
 import { getServerTranslations } from "../../lib/ServerTranslations";
+import PageReadyNotifier from "../../components/PageReadyNotifier";
 
 
 type Props = { params: Promise<{ slug: string }> | { slug: string } };
@@ -21,24 +22,27 @@ type MediaItem = {
 };
 
 export default async function ProjectPage({ params }: Props) {
-    const { t } = await getServerTranslations();
+  const { t } = await getServerTranslations();
 
   const resolved = await params; // <- important for Turbopack / latest App Router
   const slug = resolved?.slug;
   if (!slug) return notFound();
-  
+
   try {
     const project = getProjectBySlug(slug);
     const meta = project.data;
-const media =
-  Array.isArray(meta.media)
-    ? meta.media.filter(
-        (m) => m?.src && typeof m.src === "string"
-      )
-    : [];
+    const media =
+      Array.isArray(meta.media)
+        ? meta.media.filter(
+          (m) => m?.src && typeof m.src === "string"
+        )
+        : [];
     return (
-<main className="flex justify-center transition-colors bg-[#E9EDFF] dark:bg-black text-gray-900 dark:text-gray-100">
-  <div className="w-full sm:max-w-2/4 max-w-6xl px-4 sm:px-6 lg:px-0 space-y-6 py-10">
+      <>
+        <PageReadyNotifier />
+
+      <main className="flex justify-center transition-colors bg-[#E9EDFF] dark:bg-black text-gray-900 dark:text-gray-100">
+        <div className="w-full sm:max-w-2/4 max-w-6xl px-4 sm:px-6 lg:px-0 space-y-6 py-10">
 
     {/* Project Overview Card */}
     <section className="bg-white dark:bg-black rounded-3xl border-4 border-black shadow-[6px_6px_0_0_#000] overflow-hidden dark:border-[#00AFC7] dark:shadow-[0px_0px_0_0_black]">
@@ -182,7 +186,7 @@ const media =
 
   </div>
 </main>
-
+      </>
     );
   } catch (err) {
     console.error("Project load error:", err);
