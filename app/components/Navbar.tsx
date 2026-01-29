@@ -1,9 +1,10 @@
+// app/components/Navbar.tsx - UPDATED VERSION
 "use client";
 
-import Link from "next/link";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "../hooks/UseTheme";
 import { useLanguage } from "../hooks/UseLanguage";
+import TransitionLink from "./TransitionLink";
 
 export default function Navbar() {
   const { isDark, toggle } = useTheme();
@@ -13,7 +14,13 @@ export default function Navbar() {
     <nav className="sticky top-5 z-50 bg-[#00AFC7] p-4 rounded-b-3xl border-4 border-black dark:border-[#00AFC7] sm:w-2/4 max-w-6xl sm:mx-auto mx-4 shadow-[6px_6px_0_0_#000] dark:shadow-[0px_0px_0_0_transparent]">
       <div className="flex items-center justify-between">
         <div className="font-black text-black text-2xl">
-          <Link href="/">Milan Breuren</Link>
+          {/* Replace Link with TransitionLink for smooth page transition */}
+          <TransitionLink 
+            href="/"
+            dotColor={[0, 0, 0]} // Turquoise color matching navbar
+          >
+            Milan Breuren
+          </TransitionLink>
         </div>
 
         <div className="flex items-center gap-6 font-black text-black text-2xl">

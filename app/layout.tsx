@@ -1,3 +1,4 @@
+// app/layout.tsx - UPDATED VERSION
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Crimson_Text } from "next/font/google";
 import "./globals.css";
@@ -7,6 +8,8 @@ import { ThemeProvider } from "./hooks/UseTheme";
 import I18nProvider from "./components/I18nProvider";
 import { IBM_Plex_Mono } from "next/font/google";
 import DarkModeToggle3D from "./components/DarkModeToggle3D";
+import { TransitionProvider } from "./context/TransitionContext";
+import TransitionCanvasWrapper from "./components/TransitionCanvasWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -46,14 +49,26 @@ export default function RootLayout({
       <body className={`${ibmPlexMono.className} antialiased has-fixed-navbar`}>
         <ThemeProvider>
           <I18nProvider>
-            <header className="fixed inset-x-0 z-50" style={{ top: "var(--navbar-top-gap)" }}>
-              <div className="mx-auto w-full w-full"> {/* container for centering */}
-                <Navbar />
-              </div>
-            </header>
-            <DarkModeToggle3D modelPath="/models/LowPolyMonitor.glb" />
-            {children}
-            <Footer />
+            <TransitionProvider
+              defaultConfig={{
+                dotColor: [0, 0, 0],
+                spacing: 25,
+                dotSize: 1.0,
+                speed: 600,
+              }}
+            >
+              {/* Transition Canvas */}
+              <TransitionCanvasWrapper />
+
+              <header className="fixed inset-x-0 z-50" style={{ top: "var(--navbar-top-gap)" }}>
+                <div className="mx-auto w-full w-full">
+                  <Navbar />
+                </div>
+              </header>
+              <DarkModeToggle3D modelPath="/models/LowPolyMonitor.glb" />
+              {children}
+              <Footer />
+            </TransitionProvider>
           </I18nProvider>
         </ThemeProvider>
       </body>

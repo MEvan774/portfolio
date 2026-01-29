@@ -1,6 +1,7 @@
-import Link from "next/link";
+// app/components/ProjectCard.tsx - UPDATED VERSION
 import { Github } from "lucide-react";
 import type { Project } from "./../lib/projects";
+import TransitionLink from "./TransitionLink";
 
 type Props = {
   project: Project;
@@ -24,15 +25,17 @@ export default function ProjectCard({ project }: Props) {
   active:shadow-[2px_2px_0_0_#000]
 ">
       
-      {/* Clickable card area */}
-      <Link
+      {/* Clickable card area with TransitionLink */}
+      <TransitionLink
         href={`/projects/${project.slug}`}
         className="absolute inset-0 bg-[#cfe4f5] dark:bg-black transition hover:brightness-95"
+        dotColor={[0, 0, 0]} // Black transition for project cards
+        ariaLabel={`View ${project.name}`}
       >
         <span className="sr-only">
           View {project.name}
         </span>
-      </Link>
+      </TransitionLink>
 
       {/* Bottom bar */}
       <div className=" border-t-2 border-black dark:border-[#00AFC7] pointer-events-none absolute bottom-0 left-0 right-0 flex items-center justify-between bg-[#00AFC7] px-3 py-2 text-white">
