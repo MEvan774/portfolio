@@ -60,12 +60,7 @@ export default function RootLayout({
               {/* Transition Canvas */}
               <TransitionCanvasWrapper />
 
-              <header className="fixed inset-x-0 z-50" style={{ top: "var(--navbar-top-gap)" }}>
-                <div className="mx-auto w-full w-full">
                   <Navbar />
-                </div>
-              </header>
-              <DarkModeToggle3D modelPath="/models/LowPolyMonitor.glb" />
               {children}
               <Footer />
             </TransitionProvider>

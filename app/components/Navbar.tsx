@@ -1,4 +1,4 @@
-// app/components/Navbar.tsx - UPDATED VERSION
+// app/components/Navbar.tsx - NEOBRUTALIST VERSION WITH ANGLED BLACK SECTION
 "use client";
 
 import { Moon, Sun } from "lucide-react";
@@ -11,34 +11,47 @@ export default function Navbar() {
   const { t, toggleLanguage } = useLanguage();
 
   return (
-    <nav className="sticky top-5 z-50 bg-[#00AFC7] p-4 rounded-b-3xl border-4 border-black dark:border-[#00AFC7] sm:w-2/4 max-w-6xl sm:mx-auto mx-4 shadow-[6px_6px_0_0_#000] dark:shadow-[0px_0px_0_0_transparent]">
-      <div className="flex items-center justify-between">
-        <div className="font-black text-black text-2xl">
-          {/* Replace Link with TransitionLink for smooth page transition */}
-          <TransitionLink 
-            href="/"
-            dotColor={[0, 0, 0]} // Turquoise color matching navbar
-          >
-            Milan Breuren
-          </TransitionLink>
+    <nav className="w-full border-b-4 border-black relative top-0 z-50 sticky">
+      <div className="flex items-stretch h-16">
+        {/* Left section - Turquoise with name */}
+        <div className="flex-1 bg-[#00AFC7] flex items-center px-6">
+          <div className="font-black text-black text-xl sm:text-2xl">
+            <TransitionLink 
+              href="/"
+              dotColor={[0, 175, 199]}
+            >
+              MILAN BREUREN
+            </TransitionLink>
+          </div>
         </div>
 
-        <div className="flex items-center gap-6 font-black text-black text-2xl">
-          <button
-            onClick={toggleLanguage}
-            className="text-xl font-bold hover:opacity-80"
-          >
-            {t("navbar.language")}
-          </button>
+        {/* Right section - Black with angled edge */}
+        <div className="relative bg-black flex items-center px-6 gap-4">
+          {/* Angled edge overlay - creates the 10 o'clock angle */}
+          <div 
+            className="absolute left-0 top-0 bottom-0 w-8 bg-[#00AFC7]"
+            style={{
+              clipPath: 'polygon(0% 0%, 65% 100%, 0% 100%)'
+            }}
+          />
+          
+          {/* Content */}
+          <div className="relative z-10 flex items-center gap-4 ml-6">
+            <button
+              onClick={toggleLanguage}
+              className="text-xl font-bold text-[#00AFC7] hover:text-white transition"
+            >
+              {t("navbar.language")}
+            </button>
 
-          {/* Hidden on desktop (md and up), visible on mobile only */}
-          <button
-            onClick={toggle}
-            className="rounded-full p-2 hover:bg-white/20 transition md:hidden"
-            aria-label="Toggle theme"
-          >
-            {isDark ? <Sun size={24} /> : <Moon size={24} />}
-          </button>
+            <button
+              onClick={toggle}
+              className="text-[#00AFC7] hover:text-white transition size-xl"
+              aria-label="Toggle theme"
+            >
+              {isDark ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+          </div>
         </div>
       </div>
     </nav>
