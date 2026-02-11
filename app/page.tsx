@@ -16,7 +16,7 @@ export default async function Home() {
 
       <main className="min-h-screen bg-[#E9EDFF] dark:bg-black">
         {/* ABOUT ME - starts right after navbar */}
-        <section className="bg-[#E9EDFF] dark:bg-gray-900 overflow-visible relative">
+        <section className="bg-[#E9EDFF] dark:bg-gray-900 overflow-visible relative pb-32">
 
           <div className="px-4 sm:px-6 lg:px-8 py-8 max-w-6xl mx-auto">
             <div className="flex flex-col md:flex-row gap-6 md:gap-8 justify-between items-start">
@@ -59,8 +59,8 @@ export default async function Home() {
                 </button>
               </div>
 
-              {/* Image */}
-              <div className="relative h-64 md:h-80 aspect-[3/4] overflow-hidden rounded-2xl border-4 border-black dark:border-[#00AFC7] shrink-0">
+              {/* Image - with transform to push it down */}
+              <div className="relative h-64 md:h-100 aspect-[3/4] overflow-hidden shrink-0 translate-y-24">
                 <Image
                   src="/images/profile/profile.jpg"
                   alt="Profile photo"
@@ -73,7 +73,7 @@ export default async function Home() {
           </div>
 
           {/* Slanted bottom with black outline */}
-          <div className="relative">
+          <div className="absolute bottom-0 left-0 right-0">
             {/* Black border outline */}
             <svg 
               className="absolute bottom-0 left-0 w-full pointer-events-none" 
