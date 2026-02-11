@@ -49,13 +49,38 @@ export default function SkillsSection() {
         );
 
   return (
-    <section className="bg-white dark:border-[#00AFC7] dark:bg-black rounded-3xl border-4 border-black shadow-[6px_6px_0_0_#000] overflow-hidden flex flex-col h-72 md:h-80">
+    <section className="bg-white dark:border-[#00AFC7] dark:bg-black rounded-2xl border-4 border-black shadow-[6px_6px_0_0_#000] overflow-hidden flex flex-col h-96 md:h-120">
       {/* Top bar */}
-      <div className="flex items-center justify-between h-12 px-4 bg-[#00AFC7] border-b-4 border-black dark:border-[#00AFC7]">
-        {/* Title */}
-        <h2 className="font-black text-lg text-black">
-          {t("landingPage.skills")}
-        </h2>
+<div className="relative flex items-center justify-between h-12 bg-[#00AFC7] border-b-4 border-black dark:border-[#00AFC7]">
+
+<div className="relative flex items-center">
+  {/* Title block */}
+  <h2
+    className="
+      relative z-10
+      font-black text-lg uppercase
+      text-[#00AFC7]
+      bg-black
+      px-4
+      h-12
+      flex items-center
+    "
+  >
+    {t("landingPage.skills")}
+  </h2>
+
+  {/* Angled edge */}
+  <span
+    className="
+      absolute right-[-15px] top-0 h-full w-4
+      bg-black
+    "
+    style={{
+      clipPath: "polygon(0% 0%, 0% 100%, 44% 100%, 95% 0%)",
+    }}
+  />
+</div>
+
 
         {/* Dropdown */}
         <select
@@ -95,7 +120,7 @@ export default function SkillsSection() {
         <div className="flex gap-2">
           <span className="h-3 w-3 rounded-full bg-red-500 border-2 border-black" />
           <span className="h-3 w-3 rounded-full bg-yellow-400 border-2 border-black" />
-          <span className="h-3 w-3 rounded-full bg-green-500 border-2 border-black" />
+          <span className="h-3 w-3 rounded-full bg-green-500 border-2 border-black mr-4" />
         </div>
       </div>
 

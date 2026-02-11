@@ -24,7 +24,7 @@ export default function Footer() {
               <div className="h-[3px] w-16 bg-[#00AFC7]"></div>
             </div>
 
-            <div className="flex items-center items-center gap-6 text-black text-[#00AFC7]">
+            <div className="flex justify-center items-center gap-6 text-[#00AFC7]">
               <a
                 href="https://nl.linkedin.com/in/milan-breuren-04223a1a5"
                 target="_blank"

@@ -18,7 +18,7 @@ export default function Navbar() {
           <div className="font-black text-black text-xl sm:text-2xl">
             <TransitionLink 
               href="/"
-              dotColor={[0, 175, 199]}
+              dotColor={[0, 0, 0]}
             >
               MILAN BREUREN
             </TransitionLink>

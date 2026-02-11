@@ -47,9 +47,11 @@ export default async function Home() {
                     py-2
                     text-sm
                     font-black
+                    text-black
+                    shadow-[4px_4px_0_0_#000]
                     hover:translate-x-[-2px]
                     hover:translate-y-[-2px]
-                    hover:shadow-[4px_4px_0_0_#000]
+                    hover:shadow-[6px_6px_0_0_#000]
                     transition-all
                   "
                 >
