@@ -10,6 +10,7 @@ import { IBM_Plex_Mono } from "next/font/google";
 import DarkModeToggle3D from "./components/DarkModeToggle3D";
 import { TransitionProvider } from "./context/TransitionContext";
 import TransitionCanvasWrapper from "./components/TransitionCanvasWrapper";
+import TransitionLoadingSpinner from "./components/TransitionLoadingSpinner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -59,6 +60,7 @@ export default function RootLayout({
             >
               {/* Transition Canvas */}
               <TransitionCanvasWrapper />
+                <TransitionLoadingSpinner />
 
                   <Navbar />
               {children}

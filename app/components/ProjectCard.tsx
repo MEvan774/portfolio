@@ -29,8 +29,14 @@ export default function ProjectCard({ project }: Props) {
       {/* Clickable card area */}
       <TransitionLink
         href={`/projects/${project.slug}`}
-        className="absolute inset-0 hover:brightness-95 transition"
+        className="  absolute inset-0
+  transition-[filter]
+  duration-150
+  ease-[steps(1)]
+  hover:brightness-95"
         dotColor={[0, 0, 0]}
+        spacing={35}
+        dotSize={1.2}
         ariaLabel={`View ${project.name}`}
       >
         <span className="sr-only">View {project.name}</span>

@@ -19,6 +19,8 @@ export default function Navbar() {
             <TransitionLink 
               href="/"
               dotColor={[0, 0, 0]}
+              spacing={35}
+              dotSize={1.2}
             >
               MILAN BREUREN
             </TransitionLink>

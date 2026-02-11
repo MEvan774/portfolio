@@ -65,17 +65,12 @@ const fragmentShaderSource = `
     float dist = length(v_uv * screen_size - grid_center);
     float dot_radius = u_dot_size * scale * u_spacing * 0.8;
     
-    // 8. Edge softening
-    float alpha = 1.0 - smoothstep(
-      max(dot_radius - 1.5, 0.0),
-      dot_radius + 1.5,
-      dist
-    );
-    
     // Alpha filtering
-    if (alpha < 0.01) discard;
+    float alpha = dist < dot_radius ? 1.0 : 0.0;
+
+    if (alpha < 0.5) discard;
     
-    gl_FragColor = vec4(u_dot_color, alpha);
+    gl_FragColor = vec4(u_dot_color, 1.0);
   }
 `;
 
