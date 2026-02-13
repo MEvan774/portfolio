@@ -5,6 +5,7 @@ import { getAllProjects } from "./lib/mdx";
 import SkillsSection from "./components/SkillsCard";
 import { getServerTranslations } from "../app/lib/ServerTranslations";
 import PageReadyNotifier from "./components/PageReadyNotifier";
+import ShaderBackground from "./components/ShaderBackground";
 
 export default async function Home() {
   const allProjects = await getAllProjects();
@@ -100,35 +101,13 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* TURQUOISE BACKGROUND WITH GRID - starts after About Me */}
+        {/* TURQUOISE BACKGROUND WITH SHADER - starts after About Me */}
         <div className="relative bg-[#00AFC7] dark:bg-[#00AFC7]">
 
-          {/* GRID FADE OVERLAY */}
-<div
-  className="absolute inset-0 z-[1] pointer-events-none"
-  style={{
-    background: `
-      linear-gradient(
-        to bottom,
-        #00AFC7 0%,
-        rgba(0, 175, 199, 1) 25%,
-        rgba(0, 175, 199, 0.8) 30%,
-        rgba(119, 205, 255, 0) 80%,
-        rgba(119, 205, 255, 0) 100%
-      )
-    `,
-  }}
-/>
-<div
-  className="absolute inset-0 z-0 pointer-events-none"
-  style={{
-    backgroundImage: `
-      linear-gradient(to right, #77cdff 2px, transparent 2px),
-      linear-gradient(to bottom, #77cdff 2px, transparent 2px)
-    `,
-    backgroundSize: "32px 32px",
-  }}
-/>
+          {/* SHADER BACKGROUND */}
+          <div className="absolute inset-0 z-0">
+            <ShaderBackground />
+          </div>
 
           {/* CONTENT */}
           <div className="relative z-10">
