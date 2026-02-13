@@ -228,9 +228,9 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
       <div
         style={{
           position: 'fixed',
-          top: isMobile ? 'auto' : '20px',
-          bottom: isMobile ? '20px' : 'auto',
-          right: '20px',
+top: 'auto',
+bottom: '20px',
+right: '20px',
           zIndex: 1000,
           display: 'flex',
           flexDirection: 'row',
@@ -267,9 +267,10 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
             >
               <div
                 style={{
-                  writingMode: 'vertical-rl',
+                  writingMode: 'vertical-lr',
+                  transform: 'rotate(180deg)',
                   textOrientation: 'mixed',
-                  fontSize: '18px',
+                  fontSize: '24px',
                   fontWeight: '900',
                   color: '#000000',
                   letterSpacing: '1px',
@@ -336,9 +337,9 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
     <div
       style={{
         position: 'fixed',
-        top: isMobile ? 'auto' : '20px',
-        bottom: isMobile ? '20px' : 'auto',
-        right: '20px',
+top: 'auto',
+bottom: '20px',
+right: '20px',
         zIndex: 1000,
         pointerEvents: 'none',
         display: 'flex',
@@ -371,14 +372,16 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              fontWeight: '900',
               zIndex: 999,
             }}
           >
             <div
               style={{
-                writingMode: 'vertical-rl',
+                writingMode: 'vertical-lr',
+                transform: 'rotate(180deg)',
                 textOrientation: 'mixed',
-                fontSize: '18px',
+                fontSize: '24px',
                 fontWeight: '900',
                 color: '#000000',
                 letterSpacing: '1px',

@@ -1,6 +1,6 @@
 // app/layout.tsx - UPDATED VERSION
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Crimson_Text } from "next/font/google";
+import { Geist, Geist_Mono, Crimson_Text, Archivo} from "next/font/google";
 import "./globals.css";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
@@ -28,6 +28,13 @@ const crimsonText = Crimson_Text({
   weight: ["400", "600", "700"],
 });
 
+const archivo = Archivo({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-archivo",
+});
+
+
 const ibmPlexMono = IBM_Plex_Mono({
   variable: "--font-ibm-plex-mono",
   subsets: ["latin"],
@@ -47,7 +54,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${ibmPlexMono.className} antialiased has-fixed-navbar`}>
+      <body className={`${archivo.className} antialiased has-fixed-navbar`}>
         <ThemeProvider>
           <I18nProvider>
             <TransitionProvider
@@ -66,6 +73,7 @@ export default function RootLayout({
               {children}
               <Footer />
             </TransitionProvider>
+            <DarkModeToggle3D />
           </I18nProvider>
         </ThemeProvider>
       </body>
