@@ -9,7 +9,7 @@ export default function Footer() {
   const { t } = useLanguage();
 
   return (
-    <footer className="bg-black text-[#00AFC7] border-t-4 border-[#77cdff]">
+    <footer id="contact" className="bg-black text-[#00AFC7] border-t-4 border-[#77cdff]">
       <div className="py-24">
         <div className="flex flex-col gap-16 md:flex-row md:justify-between w-full max-w-2/4 mx-auto items-center">
 

@@ -6,6 +6,7 @@ import SkillsSection from "./components/SkillsCard";
 import { getServerTranslations } from "../app/lib/ServerTranslations";
 import PageReadyNotifier from "./components/PageReadyNotifier";
 import ShaderBackground from "./components/ShaderBackground";
+import SidebarMenu from "./components/SidebarMenu";
 
 export default async function Home() {
   const allProjects = await getAllProjects();
@@ -14,8 +15,9 @@ export default async function Home() {
   return (
     <>
       <PageReadyNotifier />
+      <SidebarMenu />
 
-      <main className="min-h-screen bg-[#E9EDFF] dark:bg-black">
+      <main id="home" className="min-h-screen bg-[#E9EDFF] dark:bg-black">
         {/* ABOUT ME - starts right after navbar */}
         <section className="bg-[#E9EDFF] dark:bg-gray-900 overflow-visible relative pb-32">
 
@@ -61,7 +63,7 @@ export default async function Home() {
               </div>
 
               {/* Image - with transform to push it down */}
-              <div className="relative h-64 md:h-100 aspect-[3/4] overflow-hidden shrink-0 translate-y-24">
+              <div className="relative h-64 md:h-100 aspect-[3/4] overflow-visible shrink-0 translate-y-24">
                 <Image
                   src="/images/profile/profile.jpg"
                   alt="Profile photo"
@@ -112,9 +114,11 @@ export default async function Home() {
           {/* CONTENT */}
           <div className="relative z-10">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 py-10">
-              <SkillsSection />
+              <div id="skills">
+                <SkillsSection />
+              </div>
 
-              <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <section id="projects" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {projects.map((project) => (
                   <ProjectCard key={project.slug} project={project} />
                 ))}
