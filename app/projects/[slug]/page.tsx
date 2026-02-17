@@ -29,13 +29,21 @@ export default async function ProjectPage({ params }: Props) {
   const slug = resolved?.slug;
   if (!slug) return notFound();
 
+  let project;
+  let meta;
+  let media: MediaItem[] = [];
+
   try {
-    const project = getProjectBySlug(slug);
-    const meta = project.data;
-    const media = Array.isArray(meta.media)
+    project = getProjectBySlug(slug);
+    meta = project.data;
+
+    media = Array.isArray(meta.media)
       ? meta.media.filter((m) => m?.src && typeof m.src === "string")
       : [];
-
+  } catch (err) {
+    console.error("Project load error:", err);
+    return notFound();
+  }
     return (
       <>
         <PageReadyNotifier />
@@ -238,7 +246,7 @@ export default async function ProjectPage({ params }: Props) {
       </>
     );
   } catch (err) {
-    console.error("Project load error:", err);
+    console.error("Project load error:", err);c
     return notFound();
   }
 }
