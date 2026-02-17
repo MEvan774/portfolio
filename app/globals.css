@@ -130,3 +130,17 @@ header {
 .page {
   animation: fadeIn 0.6s ease-out;
 }
+
+/* Floating animation for hero photo */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+.animate-float {
+  animation: float 16s ease-in-out infinite;
+}
