@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { getProjectBySlug } from "@/app/lib/mdx";
 import { Github } from "lucide-react";
 import { notFound } from "next/navigation";
@@ -245,8 +246,4 @@ export default async function ProjectPage({ params }: Props) {
         </main>
       </>
     );
-  } catch (err) {
-    console.error("Project load error:", err);c
-    return notFound();
   }
-}
