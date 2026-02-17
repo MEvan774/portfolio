@@ -24,6 +24,10 @@ export default function Slab3D({
   const frameRef = useRef<number | undefined>(undefined);
 
   useEffect(() => {
+    const currentMount: HTMLDivElement | null = mountRef.current;
+    if (currentMount && currentMount.children.length > 0) {
+      return; // Already initialized
+    }
     if (!mountRef.current) return;
 
     // Scene setup
@@ -190,6 +194,9 @@ export default function Slab3D({
       }
       if (mountRef.current && renderer.domElement) {
         mountRef.current.removeChild(renderer.domElement);
+      }
+      if (currentMount && renderer.domElement && currentMount.contains(renderer.domElement)) {
+        currentMount.removeChild(renderer.domElement);
       }
       
       scene.traverse((object) => {
