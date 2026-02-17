@@ -40,7 +40,7 @@ export default function Navbar() {
         <div className="flex items-stretch h-16">
           {/* Left section - Turquoise with name */}
           <div className="flex-1 bg-[#00AFC7] flex items-center px-6">
-            <div className="font-black text-black text-xl sm:text-2xl">
+            <div className="font-black text-black text-xl sm:text-2xl uppercase transition hover:text-white">
               <TransitionLink 
                 href="/"
                 dotColor={[0, 0, 0]}
@@ -58,7 +58,7 @@ export default function Navbar() {
             <div 
               className="absolute left-0 top-0 bottom-0 w-8 bg-[#00AFC7]"
               style={{
-                clipPath: 'polygon(0% 0%, 65% 100%, 0% 100%)'
+                clipPath: 'polygon(-1% -1%, 65% 100%, -1% 100%)'
               }}
             />
             
@@ -67,23 +67,15 @@ export default function Navbar() {
               {/* Desktop buttons - hidden on mobile */}
               <button
                 onClick={toggleLanguage}
-                className="hidden lg:block text-xl font-bold text-[#00AFC7] hover:text-white transition"
+                className="hidden lg:block text-xl font-bold text-white hover:text-[#00AFC7] transition"
               >
                 {t("navbar.language")}
-              </button>
-
-              <button
-                onClick={toggle}
-                className="hidden lg:block text-[#00AFC7] hover:text-white transition size-xl"
-                aria-label="Toggle theme"
-              >
-                {isDark ? <Sun size={20} /> : <Moon size={20} />}
               </button>
 
               {/* Hamburger button - only visible on mobile/tablet */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden text-[#00AFC7] hover:text-white transition"
+                className="lg:hidden text-white hover:text-[#00AFC7] transition"
                 aria-label="Toggle menu"
               >
                 {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -127,15 +119,6 @@ export default function Navbar() {
               className="block w-full text-left px-6 py-4 bg-white dark:bg-gray-800 border-3 border-black dark:border-[#00AFC7] shadow-[4px_4px_0_0_#000] hover:shadow-[6px_6px_0_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all text-lg font-black text-black dark:text-white"
             >
               {t("navbar.language")}
-            </button>
-
-            {/* Theme Toggle Button */}
-            <button
-              onClick={toggle}
-              className="block w-full text-left px-6 py-4 bg-white dark:bg-gray-800 border-3 border-black dark:border-[#00AFC7] shadow-[4px_4px_0_0_#000] hover:shadow-[6px_6px_0_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all text-lg font-black text-black dark:text-white flex items-center gap-3"
-            >
-              {isDark ? <Sun size={20} /> : <Moon size={20} />}
-              {isDark ? "LIGHT MODE" : "DARK MODE"}
             </button>
           </nav>
 

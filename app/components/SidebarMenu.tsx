@@ -33,7 +33,7 @@ export default function SidebarMenu() {
               key={item.label}
               href={item.href}
               onClick={(e) => handleClick(e, item.href)}
-              className="block w-full text-left px-6 py-4 bg-white dark:bg-gray-800/90 backdrop-blur-sm border-3 border-black dark:border-[#00AFC7] shadow-[4px_4px_0_0_#000] hover:shadow-[6px_6px_0_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all text-xl font-black text-black dark:text-white"
+              className="block w-full text-left px-6 py-4 bg-white dark:bg-black backdrop-blur-sm border-3 border-black dark:shadow-[4px_4px_0_0_#00AFC7] dark:hover:shadow-[6px_6px_0_0_#00AFC7] shadow-[4px_4px_0_0_#000] hover:shadow-[6px_6px_0_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all text-xl font-black text-black dark:text-white"
             >
               {item.label}
             </Link>

@@ -71,10 +71,24 @@ export default function ProjectCard({ project }: Props) {
         aria-label={`View ${project.name} on GitHub`}
         className="
           pointer-events-auto absolute bottom-3 right-3
-          text-black
-          transition
-          hover:-translate-y-[1px]
-          active:translate-y-[1px]
+                      rounded-3xl
+                      border-2
+                      border-black
+                      dark:border-[#00AFC7]
+                      bg-black
+                      dark:bg-[#00AFC7] px-1 py-1 text-sm font-black text-black/80
+                      transition dark:text-[#00AFC7]
+                      text-white
+                      dark:text-black
+                      shadow-[5px_5px_0_0_#00AFC7]
+                      dark:shadow-[5px_5px_0_0_#000]
+                      hover:translate-x-[-3px]
+                      hover:translate-y-[-3px]
+                      hover:shadow-[8px_8px_0_0_#00AFC7]
+                      dark:hover:shadow-[8px_8px_0_0_#000]
+                      transition-all
+                      uppercase
+                      tracking-wider
         "
       >
         <Github size={24} />

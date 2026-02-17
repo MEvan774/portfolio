@@ -69,7 +69,7 @@ export default function ProjectMediaGallery({
                 transition-all duration-100
                 ${
                   isActive
-                    ? "-translate-x-[1px] -translate-y-[1px] shadow-[4px_4px_0_0_#000]"
+                    ? "-translate-x-[1px] -translate-y-[1px] shadow-[4px_4px_0_0_#00AFC7]"
                     : "opacity-80 hover:opacity-100"
                 }
               `}

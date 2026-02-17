@@ -56,9 +56,9 @@ export default function SkillsSection() {
         );
 
   return (
-    <section className="bg-white dark:border-[#00AFC7] dark:bg-black rounded-2xl border-4 border-black shadow-[6px_6px_0_0_#000] overflow-hidden flex flex-col h-96 md:h-120">
+    <section className="bg-white dark:border-black dark:bg-black rounded-2xl border-4 border-black shadow-[6px_6px_0_0_#000] overflow-hidden flex flex-col h-96 md:h-120">
       {/* Top bar */}
-      <div className="relative flex items-center justify-between h-12 bg-[#00AFC7] border-b-4 border-black dark:border-[#00AFC7]">
+      <div className="relative flex items-center justify-between h-12 bg-[#00AFC7] border-b-4 border-black">
         <div className="relative flex items-center">
           {/* Title block */}
           <h2
@@ -99,7 +99,7 @@ export default function SkillsSection() {
             dark:border-[#00AFC7]
             bg-[#E9EDFF]
             dark:bg-black
-            dark:text-[#00AFC7]
+            dark:text-white
             px-3
             text-sm
             font-bold
