@@ -79,11 +79,6 @@ function CardTopBar({ title }: { title: string }) {
           style={{ clipPath: "polygon(0% 0%, 0% 100%, 44% 100%, 95% 0%)" }}
         />
       </div>
-      <div className="flex gap-2 mr-4">
-        <span className="h-3 w-3 rounded-full bg-red-500 border-2 border-black" />
-        <span className="h-3 w-3 rounded-full bg-yellow-400 border-2 border-black" />
-        <span className="h-3 w-3 rounded-full bg-green-500 border-2 border-black" />
-      </div>
     </div>
   );
 }
