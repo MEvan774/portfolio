@@ -113,6 +113,7 @@ export default function SkillsSection() {
             active:translate-x-[1px]
             active:translate-y-[1px]
             active:shadow-[1px_1px_0_0_#000]
+            mx-auto
           "
         >
           <option value="all">{t("landingPage.dropdown")}</option>
@@ -120,13 +121,6 @@ export default function SkillsSection() {
           <option value="frontend">Frontend</option>
           <option value="backend">Backend</option>
         </select>
-
-        {/* Window dots */}
-        <div className="flex gap-2">
-          <span className="h-3 w-3 rounded-full bg-red-500 border-2 border-black" />
-          <span className="h-3 w-3 rounded-full bg-yellow-400 border-2 border-black" />
-          <span className="h-3 w-3 rounded-full bg-green-500 border-2 border-black mr-4" />
-        </div>
       </div>
 
       {/* Content with 3D Slabs */}

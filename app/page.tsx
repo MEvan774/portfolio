@@ -8,13 +8,6 @@ import PageReadyNotifier from "./components/PageReadyNotifier";
 import ShaderBackground from "./components/ShaderBackground";
 import SidebarMenu from "./components/SidebarMenu";
 
-// Note: Add this to your globals.css or tailwind.config.js:
-// @keyframes float {
-//   0%, 100% { transform: translateY(0px); }
-//   50% { transform: translateY(-12px); }
-// }
-// .animate-float { animation: float 4s ease-in-out infinite; }
-
 export default async function Home() {
   const allProjects = await getAllProjects();
   const { t } = await getServerTranslations();
@@ -27,30 +20,47 @@ export default async function Home() {
       <main id="home" className="min-h-screen bg-[#E9EDFF] dark:bg-gray-950">
         {/* ABOUT ME */}
         <section className="bg-[#E9EDFF] dark:bg-gray-950 overflow-visible relative pb-32 md:pb-24">
-          <div className="px-4 sm:px-6 lg:px-8 py-10 max-w-6xl mx-auto">
-            <div className="flex flex-col md:flex-row gap-8 md:gap-12 justify-between items-center md:items-start">
+          <div className="px-4 sm:px-6 lg:px-8 py-8 md:py-10 max-w-6xl mx-auto">
+
+            {/* Mobile: stacked layout. Desktop: side by side */}
+            <div className="flex flex-col md:flex-row gap-6 md:gap-12 justify-between items-center md:items-start">
+
+              {/* Image - on mobile comes first, smaller size */}
+              <div className="relative shrink-0 self-center animate-float order-first md:order-last md:self-start">
+                {/* Black accent block */}
+                <div className="absolute inset-0 translate-x-[-6px] translate-y-[6px] md:translate-x-[-8px] md:translate-y-[8px] bg-black rotate-[-2deg] z-0" />
+                {/* Turquoise accent block */}
+                <div className="absolute inset-0 translate-x-3 translate-y-3 md:translate-x-4 md:translate-y-4 bg-[#00AFC7] rotate-[2deg] z-[1]" />
+                {/* Photo - smaller on mobile */}
+                <div className="relative h-52 w-44 sm:h-64 sm:w-52 md:h-[480px] md:w-80 overflow-hidden border-4 border-black rotate-[3deg] z-10 md:translate-y-[-40px]">
+                  <Image
+                    src="/images/profile/profile.jpg"
+                    alt="Profile photo"
+                    fill
+                    className="object-cover object-top rotate-[-3deg] scale-110"
+                    priority
+                  />
+                </div>
+              </div>
 
               {/* Text */}
-              <div className="flex-1 space-y-6 pb-4 md:pb-0">
-                <h1 className="text-5xl md:text-6xl lg:text-8xl font-black text-black dark:text-white leading-[0.9] tracking-tight">
+              <div className="flex-1 space-y-4 md:space-y-6 pb-4 md:pb-0 text-center md:text-left">
+                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-black text-black dark:text-white leading-[0.9] tracking-tight">
                   {t("landingPage.aboutMe")}{" "}
                   <span className="text-[#00AFC7]">MILAN,</span>
                   <br />
                   SOFTWARE
                   <br />
-                  {/* Outline-only text - black in light mode, turquoise in dark mode */}
-                  <span
-                    className="text-transparent [text-shadow:none] [-webkit-text-stroke:3px_black] dark:[-webkit-text-stroke:3px_#00AFC7]"
-                  >
+                  <span className="text-transparent [text-shadow:none] [-webkit-text-stroke:3px_black] dark:[-webkit-text-stroke:3px_#00AFC7]">
                     ENGINEER
                   </span>
                 </h1>
 
-                <p className="text-base font-medium text-black/70 dark:text-gray-300 max-w-sm leading-relaxed">
+                <p className="text-sm md:text-base font-medium text-black/70 dark:text-gray-300 max-w-sm leading-relaxed mx-auto md:mx-0">
                   {t("landingPage.aboutMeContent")}
                 </p>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 justify-center md:justify-start">
                   <a
                     href="/cv/milan-breuren-cv.pdf"
                     download
@@ -61,9 +71,12 @@ export default async function Home() {
                       dark:border-[#00AFC7]
                       bg-black
                       dark:bg-white
-                      px-8
-                      py-3
-                      text-base
+                      px-6
+                      py-2.5
+                      md:px-8
+                      md:py-3
+                      text-sm
+                      md:text-base
                       font-black
                       text-white
                       dark:text-black
@@ -76,31 +89,14 @@ export default async function Home() {
                       transition-all
                       uppercase
                       tracking-wider
+                      whitespace-nowrap
                     "
                   >
                     Download CV
                   </a>
-                  <span className="text-xs font-black text-black/30 dark:text-gray-600 uppercase tracking-widest">
+                  <span className="text-xs font-black text-black/30 dark:text-gray-600 uppercase tracking-widest hidden sm:block">
                     ↓ scroll
                   </span>
-                </div>
-              </div>
-
-              {/* Image - larger, tilted, with multiple accent blocks and floating animation */}
-              <div className="relative shrink-0 self-center md:self-start animate-float">
-                {/* Black accent block - behind turquoise */}
-                <div className="absolute inset-0 translate-x-[-8px] translate-y-[8px] bg-black rotate-[-2deg] z-0" />
-                {/* Turquoise accent block */}
-                <div className="absolute inset-0 translate-x-4 translate-y-4 bg-[#00AFC7] rotate-[2deg] z-[1]" />
-                {/* Photo - larger and tilted */}
-                <div className="relative h-80 md:h-[480px] w-64 md:w-80 overflow-hidden border-4 border-black rotate-[3deg] z-10 translate-y-0 md:translate-y-[-40px]">
-                  <Image
-                    src="/images/profile/profile.jpg"
-                    alt="Profile photo"
-                    fill
-                    className="object-cover object-top rotate-[-3deg] scale-110"
-                    priority
-                  />
                 </div>
               </div>
             </div>
@@ -129,17 +125,18 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* TURQUOISE SECTION - extra top padding for photo overlap */}
+        {/* TURQUOISE SECTION */}
         <div className="relative bg-[#00AFC7] dark:bg-[#00AFC7]">
           <div className="absolute inset-0 z-0">
             <ShaderBackground />
           </div>
           <div className="relative z-10">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 py-16 pt-20 md:pt-24">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 md:space-y-8 py-10 md:py-16 pt-12 md:pt-24">
               <div id="skills">
                 <SkillsSection />
               </div>
-              <section id="projects" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {/* 2 cols on mobile, 2 on sm, 3 on lg — desktop unchanged */}
+              <section id="projects" className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
                 {projects.map((project) => (
                   <ProjectCard key={project.slug} project={project} />
                 ))}

@@ -17,9 +17,6 @@ export default function ScrollToTopButton() {
         items-center
         justify-center
         rounded-2xl
-        border-4
-        border-black
-        dark:border-[#00AFC7]
         bg-white
         dark:bg-black
         px-6
@@ -27,12 +24,13 @@ export default function ScrollToTopButton() {
         font-black
         text-black
         dark:text-[#00AFC7]
-        shadow-[4px_4px_0_0_#000]
+        shadow-[4px_4px_0_0_#00AFC7]
         transition
         active:translate-x-[2px]
         active:translate-y-[2px]
-        active:shadow-[2px_2px_0_0_#000]
+        active:shadow-[2px_2px_0_0_#00AFC7]
         md:hidden
+        uppercase
       "
     >
       Back to top

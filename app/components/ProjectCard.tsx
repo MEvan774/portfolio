@@ -13,7 +13,8 @@ export default function ProjectCard({ project }: Props) {
       className="
         group relative aspect-square overflow-hidden mt-4 rounded-xl
         border-4 border-black
-        bg-[linear-gradient(90deg,#000_48px,#E9EDFF_48px)]
+        bg-[linear-gradient(90deg,#000_32px,#E9EDFF_32px)]
+        md:bg-[linear-gradient(90deg,#000_48px,#E9EDFF_48px)]
         shadow-[6px_6px_0_0_#000]
         transition-all duration-150 ease-out
 
@@ -29,11 +30,11 @@ export default function ProjectCard({ project }: Props) {
       {/* Clickable card area */}
       <TransitionLink
         href={`/projects/${project.slug}`}
-        className="  absolute inset-0
-  transition-[filter]
-  duration-150
-  ease-[steps(1)]
-  hover:brightness-95"
+        className="absolute inset-0
+          transition-[filter]
+          duration-150
+          ease-[steps(1)]
+          hover:brightness-95"
         dotColor={[0, 0, 0]}
         spacing={35}
         dotSize={1.2}
@@ -45,13 +46,14 @@ export default function ProjectCard({ project }: Props) {
       {/* Left sidebar content */}
       <div
         className="
-          pointer-events-none absolute top-0 bottom-0 left-0 w-12
+          pointer-events-none absolute top-0 bottom-0 left-0
+          w-8 md:w-12
           flex items-left justify-center
         "
       >
         <span
           className="
-            text-2xl font-black text-[#00AFC7]
+            text-base md:text-2xl font-black text-[#00AFC7]
             [writing-mode:vertical-rl]
             rotate-180
             select-none
@@ -70,28 +72,30 @@ export default function ProjectCard({ project }: Props) {
         rel="noopener noreferrer"
         aria-label={`View ${project.name} on GitHub`}
         className="
-          pointer-events-auto absolute bottom-3 right-3
-                      rounded-3xl
-                      border-2
-                      border-black
-                      dark:border-[#00AFC7]
-                      bg-black
-                      dark:bg-[#00AFC7] px-1 py-1 text-sm font-black text-black/80
-                      transition dark:text-[#00AFC7]
-                      text-white
-                      dark:text-black
-                      shadow-[5px_5px_0_0_#00AFC7]
-                      dark:shadow-[5px_5px_0_0_#000]
-                      hover:translate-x-[-3px]
-                      hover:translate-y-[-3px]
-                      hover:shadow-[8px_8px_0_0_#00AFC7]
-                      dark:hover:shadow-[8px_8px_0_0_#000]
-                      transition-all
-                      uppercase
-                      tracking-wider
+          pointer-events-auto absolute bottom-2 right-2 md:bottom-3 md:right-3
+          rounded-3xl
+          border-2
+          border-black
+          dark:border-[#00AFC7]
+          bg-black
+          dark:bg-[#00AFC7]
+          px-1 py-1
+          text-sm font-black
+          text-white
+          dark:text-black
+          shadow-[4px_4px_0_0_#00AFC7]
+          dark:shadow-[4px_4px_0_0_#000]
+          hover:translate-x-[-3px]
+          hover:translate-y-[-3px]
+          hover:shadow-[8px_8px_0_0_#00AFC7]
+          dark:hover:shadow-[8px_8px_0_0_#000]
+          transition-all
+          uppercase
+          tracking-wider
         "
       >
-        <Github size={24} />
+        <Github size={16} className="md:hidden" />
+        <Github size={24} className="hidden md:block" />
       </a>
     </div>
   );
