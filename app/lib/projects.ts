@@ -19,8 +19,9 @@ export const projects: Project[] = [
   },
   {
     slug: "project-two",
-    name: "Project Two",
+    name: "Point and click game",
     description: "Short description of Project Two.",
     github: "https://github.com/yourname/project-two",
+    image: "/images/projects/game/CoverScaled.png",
   },
 ];

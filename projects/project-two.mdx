@@ -1,18 +1,189 @@
 ---
-title: Project Two
-description: A database project.
-github: https://github.com/yourname/project-one
-image: /images/projects/project-one.jpg
+title: Point and click game
+description: A browser-based point and click game built in TypeScript as part of a school project focused on component-based architecture and front-to-backend communication. Working within a provided game engine framework, the team extended and customized it to bring the game to life. I took on a Scrum Master role — organizing sprint meetings and keeping the project on track to meet our deadline.
+github: https://github.com/MEvan774/Forum
+live: https://forum-sigma-one.vercel.app/
+image: /images/projects/game/Cover.png
+technologies: ["TypeScript", "Next.js"]
+media:
+  - type: video
+    src: /images/projects/game/Cover.png
+    thumbnail: /projects/my-project/video-thumb.png
+  - type: image
+    src: /images/projects/game/Corridor.png
+  - type: image
+    src: /images/projects/game/FreezerSaw.png
+  - type: image
+    src: /images/projects/game/LivingRoomLight.png
 ---
-
-## Overview
-
-This project demonstrates authentication, SSR, and API routes.
-
-## Code Snippet
+In this function, it will check if the user has met the requirements before posting a question and placing it in the database.
 
 ```ts
-export async function getUser() {
-  const res = await fetch("/api/user");
-  return res.json();
-}
+/**
+     * Checks if question input is valid and creates a question
+     * @author Milan
+     */
+    private async createQuestion(): Promise<void> {
+        try {
+            let idQuestion: number = 0;
+            const loggedIn: LoggedIn = session.get("LoggedIn") as LoggedIn;
+            if (loggedIn.isLoggedIn) {
+                if (!this.inputElement.value) {
+                    alert("Uw antwoord mag niet leeg zijn!");
+                    return; // Exit the function if the description is empty
+                }
+                if (!this.titleElement.value) {
+                    alert("Uw titel mag niet leeg zijn!");
+                    return; // Exit the function if the description is empty
+                }
+
+                const result: boolean = confirm("Weet je zeker of je deze bericht wilt sturen?");
+                if (result) {
+                    if (this.snippetElement.value)
+                        await this.postQuestion(loggedIn, this.titleElement.value,
+                            this.inputElement.value, this.snippetElement.value);
+                    else
+                        await this.postQuestion(loggedIn, this.titleElement.value,
+                            this.inputElement.value, "");
+
+                    // gets id from the answer so it can be used to assign the code tag to the answer
+
+                    const _codeTagTypes: NodeListOf<HTMLInputElement> =
+                    document.querySelectorAll(".tag-container input[type='radio']");
+                    idQuestion = await this.getQuestionId();
+
+                    for (const radio of Array.from(_codeTagTypes)) {
+                        const input: HTMLInputElement = radio;
+                        if (input.checked) {
+                            console.log(input.value);
+                            console.log(idQuestion);
+                            await CodeTag.setCodeTagQuestion(input.value as CODELANGUAGE, idQuestion);
+                        }
+                    }
+
+                    console.log("ANSWER POSTED!");
+                }
+                else
+                    console.log("Post stopped!");
+            }
+            else {
+                alert("Alleen ingelogde gebruikers mogen reageren!");
+                return; // Exit the function for non-logged-in users
+            }
+        }
+        catch (error) {
+            console.error("Error posting answer:", error);
+            alert("Er is een fout opgetreden. Probeer het opnieuw!");
+            return; // Prevent reloading if an error occurred
+        }
+
+        // Reloads the page after login is succesfull
+        location.reload();
+    }
+
+    private async postQuestion(loggedIn: LoggedIn, title: string, description: string, code: string):
+    Promise<void> {
+        try {
+            await Question.setQuestion(title, description, loggedIn.userId, code);
+        }
+        catch (reason) {
+            console.log(reason);
+        }
+    }
+```
+In this function, a new question is created and put into the database.
+
+```ts
+    public static async setQuestion(title: string, description: string, idUser: number, code: string
+    ): Promise<void> {
+        try {
+            await api.queryDatabase(`INSERT INTO question (
+                    title,
+                    description,
+                    idUser,
+                    code) 
+                    VALUES ('${title}', '${description}', '${idUser}', '${code}')`);
+        }
+        catch (reason) {
+            console.error(reason);
+        }
+    }
+```
+## Overview
+
+This is a delete user form function i wrote. I reuse the same form for selecting if the user really wants to delete his account and conformation.
+
+## Typescript
+
+```ts
+    private async onDeleteUser(): Promise<void> {
+        this._formElement?.remove();
+        await User.removeUserById(this._currentUser.id);
+        this.createForm(false, true, "Account verwijderd!");
+    }
+
+        // Opens form for deleting account
+    private onDeleteProfileButton(): void {
+        this.createForm(true, false, "Weet je zeker dat je je account wilt verwijderen?");
+    }
+
+    // Creates a form with a text input field and a submit button
+    private createForm(hasOptions: boolean, canReturnToHomePage: boolean, message: string): void {
+        const formContainer: HTMLDivElement = this.view.parentElement as HTMLDivElement;
+
+        // Creates form element
+        this._formElement = document.createElement("form");
+        this._formElement.innerHTML = message;
+        this._formElement.classList.add("delete-account-container");
+
+        const buttonContainer: HTMLDivElement = document.createElement("div");
+        buttonContainer.className = "delete-options-container";
+        this._formElement.appendChild(buttonContainer);
+
+        // Creates button
+        if (hasOptions) {
+            const yesButton: HTMLButtonElement = document.createElement("button");
+
+            if (canReturnToHomePage)
+                yesButton.addEventListener("click", this.onReturnToHome.bind(this));
+            else
+                console.log("FALSE");
+            yesButton.addEventListener("click", this.onDeleteUser.bind(this));
+
+            yesButton.setAttribute("type", "button"); // Set button type explicitly
+            yesButton.classList.add("button-create-question");
+            yesButton.innerText = "Ja verwijder!";
+
+            const noButton: HTMLButtonElement = document.createElement("button");
+            noButton.addEventListener("click", this.onCloseForm.bind(this));
+            noButton.setAttribute("type", "button"); // Set button type explicitly
+            noButton.classList.add("button-create-question");
+            noButton.innerText = "Nee ga terug!";
+            buttonContainer.appendChild(yesButton);
+            buttonContainer.appendChild(noButton);
+        }
+        else {
+            const yesButton: HTMLButtonElement = document.createElement("button");
+            if (canReturnToHomePage)
+                yesButton.addEventListener("click", this.onReturnToHome.bind(this));
+            else
+                yesButton.addEventListener("click", this.onCloseForm.bind(this));
+
+            yesButton.setAttribute("type", "button"); // Set button type explicitly
+            yesButton.classList.add("button-create-question");
+            yesButton.innerText = "Oké";
+
+            buttonContainer.appendChild(yesButton);
+        }
+
+        if (!this._overlayElement) {
+            this._overlayElement = document.createElement("div");
+            this._overlayElement.className = "overlay";
+            this.view.appendChild(this._overlayElement);
+        }
+
+        // Adds the form as a child to the main container
+        formContainer.appendChild(this._formElement);
+        this.view.appendChild(this._formElement);
+    }
+```
