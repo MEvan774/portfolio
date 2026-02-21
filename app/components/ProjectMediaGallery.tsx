@@ -31,15 +31,16 @@ export default function ProjectMediaGallery({
             src={active.src}
             alt="Project screenshot"
             fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, 800px"
+            className="object-contain"
+            sizes="(max-width: 640px) 100vw, (max-width: 1280px) 80vw, 1200px"
             priority
+            quality={100}
           />
         ) : (
           <video
             src={active.src}
             controls
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain"
           />
         )}
       </div>
@@ -49,23 +50,19 @@ export default function ProjectMediaGallery({
         {items.map((item, index) => {
           if (!item?.src) return null;
           const isActive = index === activeIndex;
-          const thumbSrc = item.type === "video" 
-            ? (item.thumbnail || item.src) 
-            : item.src;
+          const thumbSrc =
+            item.type === "video" ? item.thumbnail || item.src : item.src;
 
           return (
             <button
               key={`${item.src}-${index}`}
               type="button"
               onClick={() => setActiveIndex(index)}
-              style={{ width: 128, height: 80 }} // Explicit inline dimensions
+              style={{ width: 128, height: 80 }}
               className={`
-                relative
-                shrink-0
+                relative shrink-0
                 border-4 border-black dark:border-[#00AFC7]
-                rounded-lg
-                overflow-hidden
-                bg-gray-200
+                rounded-lg overflow-hidden bg-gray-200
                 transition-all duration-100
                 ${
                   isActive
@@ -75,7 +72,6 @@ export default function ProjectMediaGallery({
               `}
             >
               {item.type === "video" && !item.thumbnail ? (
-                // Fallback for videos without thumbnails
                 <div className="absolute inset-0 flex items-center justify-center bg-gray-300">
                   <span className="font-black text-black text-2xl">▶</span>
                 </div>
@@ -86,6 +82,7 @@ export default function ProjectMediaGallery({
                   fill
                   className="object-cover"
                   sizes="128px"
+                  quality={90}
                 />
               )}
 

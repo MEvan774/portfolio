@@ -11,10 +11,10 @@ export type Project = {
 export const projects: Project[] = [
   {
     slug: "project-one",
-    name: "Project One",
-    description: "Short description of Project One.",
-    github: "https://github.com/yourname/project-one",
-    image: "/images/projects/project-one.jpg",
+    name: "Forum",
+    description: "Short description of Forum.",
+    github: "https://github.com/MEvan774/Forum",
+    image: "/images/projects/forum/ForumLanding.png",
     tech: ["React", "Node.js", "Tailwind"],
   },
   {

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 // app/components/ProjectCard.tsx
 import { Github } from "lucide-react";
 import type { Project } from "./../lib/projects";
@@ -27,6 +28,17 @@ export default function ProjectCard({ project }: Props) {
         active:shadow-[2px_2px_0_0_#000]
       "
     >
+      {/* Project image – fills the area to the right of the sidebar */}
+      {project.image && (
+        <div className="absolute inset-0 left-8 md:left-12">
+          <img
+            src={project.image}
+            alt={project.name}
+            className="h-full w-full object-cover blur-none"
+          />
+        </div>
+      )}
+
       {/* Clickable card area */}
       <TransitionLink
         href={`/projects/${project.slug}`}
@@ -40,7 +52,7 @@ export default function ProjectCard({ project }: Props) {
         dotSize={1.2}
         ariaLabel={`View ${project.name}`}
       >
-        <span className="sr-only">View {project.name}</span>
+        <span className="sr-only bg-red">View {project.name}</span>
       </TransitionLink>
 
       {/* Left sidebar content */}

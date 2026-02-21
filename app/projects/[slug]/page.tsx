@@ -274,9 +274,9 @@ export default async function ProjectPage({ params }: Props) {
                 </div>
 
                 {/* Code Snippet - full width card */}
-                <section className="bg-white rounded-3xl border-4 border-black shadow-[6px_6px_0_0_#000] overflow-hidden dark:bg-black dark:border-[#00AFC7] dark:shadow-[6px_6px_0_0_#00AFC7]">
+                <section className="min-h-[900px] bg-white rounded-3xl border-4 border-black shadow-[6px_6px_0_0_#000] overflow-hidden dark:bg-black dark:border-[#00AFC7] dark:shadow-[6px_6px_0_0_#00AFC7]">
                   <CardTopBar title={t("projectPage.codeSnippet")} />
-                  <article className="p-4 text-black font-black dark:text-[#00AFC7] max-h-96 overflow-y-auto">
+                  <article className="p-4 text-black font-black dark:text-[#00AFC7] max-h-[900px] overflow-y-auto">
                     <MDXRemote source={project.content} components={mdxComponents} />
                   </article>
                 </section>
