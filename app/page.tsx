@@ -7,6 +7,7 @@ import { getServerTranslations } from "../app/lib/ServerTranslations";
 import PageReadyNotifier from "./components/PageReadyNotifier";
 import ShaderBackground from "./components/ShaderBackground";
 import SidebarMenu from "./components/SidebarMenu";
+import HalfCircleCarousel from "./components/HalfCircleCarousel";
 
 export default async function Home() {
   const allProjects = await getAllProjects();
@@ -16,6 +17,7 @@ export default async function Home() {
     <>
       <PageReadyNotifier />
       <SidebarMenu />
+      <HalfCircleCarousel />
 
       <main id="home" className="min-h-screen bg-[#E9EDFF] dark:bg-gray-950">
         {/* ABOUT ME */}
