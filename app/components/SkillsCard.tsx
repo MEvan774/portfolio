@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { SiTypescript, SiReact, SiNextdotjs, SiHtml5, SiCss3, SiJavascript, SiNodedotjs } from "react-icons/si";
+import { SiTypescript, SiReact, SiNextdotjs, SiHtml5, SiCss3, SiJavascript, SiNodedotjs, SiSharp } from "react-icons/si";
+import { FaJava, FaDatabase } from "react-icons/fa";
 import { useLanguage } from "@/app/hooks/UseLanguage";
 import Slab3D from "./Slab3D";
 
@@ -40,6 +41,24 @@ const SKILLS = [
     label: "Typescript",
     icon: <SiTypescript size={34} />,
     color: "#3178C6",
+    categories: ["backend", "software"],
+  },
+  {
+    label: "C#",
+    icon: <SiSharp size={34} />,
+    color: "#512BD4",
+    categories: ["backend", "software"],
+  },
+  {
+    label: "Java",
+    icon: <FaJava size={34} />,
+    color: "#ED8B00",
+    categories: ["backend", "software"],
+  },
+  {
+    label: "SQL",
+    icon: <FaDatabase size={34} />,
+    color: "#CC2927",
     categories: ["backend", "software"],
   },
 ];
