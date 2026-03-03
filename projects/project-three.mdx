@@ -1,0 +1,113 @@
+---
+title: Starshop
+description: Starshop is a webshop built as a group project (team "1-Mula") during my HBO-ICT study. The main learning goal was working with third-party APIs. The app lets users browse, search, and purchase game licenses, with all game data pulled live from external sources and payments handled through Stripe. The stack is TypeScript throughout — an Express backend and a Lit-based frontend — deployed on Railway (API) and Vercel (frontend + serverless payment functions).
+github: https://github.com/MEvan774/Webshop
+live: https://webshop-api-4vlr.vercel.app/
+image: /images/projects/game/Cover.png
+technologies: ["TypeScript", "Next.js"]
+media:
+  - type: video
+    src: /images/projects/game/Cover.png
+    thumbnail: /projects/my-project/video-thumb.png
+  - type: image
+    src: /images/projects/webshop/WebshopLanding.png
+  - type: image
+    src: /images/projects/webshop/WebshopBrowse.png
+  - type: image
+    src: /images/projects/webshop/WebshopGame.png
+---
+Third-Party APIs Used
+We integrated three external APIs, each serving a different purpose:
+Steam Store API — Our primary data source for game information and pricing. The backend proxies requests to Steam's appdetails and featuredcategories endpoints so the frontend never talks to Steam directly.
+
+```ts
+// SteamStoreService.ts — Fetching game details from the Steam Store API
+const STORE_API_BASE: string = "https://store.steampowered.com/api";
+
+public async getAppDetails(appId: string): Promise<SteamAppDetails | null> {
+    const response: Response = await fetch(
+        `${STORE_API_BASE}/appdetails?appids=${encodeURIComponent(appId)}`
+    );
+
+    if (!response.ok) {
+        throw new Error(`Steam Store API error: ${response.status}`);
+    }
+
+    const json = await response.json();
+    const entry = json[appId];
+
+    if (!entry.success || !entry.data) {
+        return null;
+    }
+
+    return entry.data;
+}
+```
+SteamSpy API — Used alongside the Steam Store API to get community data like review scores, player counts, and genre tags that Steam's own API doesn't expose easily.
+
+```ts
+// SteamSpyService.ts — Fetching community stats from SteamSpy
+const STEAMSPY_BASE: string = "https://steamspy.com/api.php";
+
+public async getAppDetails(appId: string): Promise<SteamSpyAppDetails> {
+    const response: Response = await fetch(
+        `${STEAMSPY_BASE}?request=appdetails&appid=${encodeURIComponent(appId)}`
+    );
+
+    if (!response.ok) {
+        throw new Error(`SteamSpy API error: ${response.status}`);
+    }
+
+    return await response.json() as SteamSpyAppDetails;
+}
+```
+Stripe API — Handles the entire checkout and payment flow. We built a StripeService on the backend that creates Checkout Sessions and verifies payment status, keeping the secret key server-side.
+```ts
+// StripeService.ts — Creating a Stripe Checkout Session
+public async createCheckoutSession(
+    items: { name: string; price: number; quantity: number }[],
+    successUrl: string,
+    cancelUrl: string
+): Promise<{ checkoutUrl: string; sessionId: string }> {
+    const bodyParams: URLSearchParams = new URLSearchParams();
+    bodyParams.append("mode", "payment");
+    bodyParams.append("success_url", successUrl);
+    bodyParams.append("cancel_url", cancelUrl);
+
+    items.forEach((item, index) => {
+        bodyParams.append(`line_items[${index}][price_data][currency]`, "eur");
+        bodyParams.append(`line_items[${index}][price_data][product_data][name]`, item.name);
+        bodyParams.append(`line_items[${index}][price_data][unit_amount]`,
+            Math.round(item.price * 100).toString());
+        bodyParams.append(`line_items[${index}][quantity]`, item.quantity.toString());
+    });
+
+    const response = await fetch(`${this._stripeApiUrl}/checkout/sessions`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Authorization": `Bearer ${this.getSecretKey()}`,
+        },
+        body: bodyParams.toString(),
+    });
+
+    const data = await response.json();
+    return { checkoutUrl: data.url, sessionId: data.id };
+}
+```
+Frontend API Consumption
+On the frontend, a service layer abstracts all API calls. Game data and prices are fetched in parallel to keep the UI responsive:
+```ts
+// CurrentGameService.ts — Fetching game detail + prices in parallel
+const [gameResponse, priceResponse] = await Promise.all([
+    fetch(`${VITE_API_URL}games/${gameID}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+    }),
+    fetch(`${VITE_API_URL}products/prices/${gameID}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+    }),
+]);
+```

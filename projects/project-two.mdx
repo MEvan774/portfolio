@@ -2,7 +2,7 @@
 title: Point and click game
 description: A browser-based point and click game built in TypeScript as part of a school project focused on component-based architecture and front-to-backend communication. Working within a provided game engine framework, the team extended and customized it to bring the game to life. I took on a Scrum Master role — organizing sprint meetings and keeping the project on track to meet our deadline.
 github: https://github.com/MEvan774/Forum
-live: https://forum-sigma-one.vercel.app/
+live: https://point-and-click-game-api.vercel.app/
 image: /images/projects/game/Cover.png
 technologies: ["TypeScript", "Next.js"]
 media:
@@ -16,174 +16,152 @@ media:
   - type: image
     src: /images/projects/game/LivingRoomLight.png
 ---
-In this function, it will check if the user has met the requirements before posting a question and placing it in the database.
+This component creates hitboxes for the designated gameObject. It will place a clickable div on the screen and it size and location is based on the variables given by the gameObject self. My goal was to make it as easy to use for my teammates so they could implement new gameObjects with ease.
 
 ```ts
+import { CanvasComponent } from "../../../../web/src/components/CanvasComponent";
+
 /**
-     * Checks if question input is valid and creates a question
-     * @author Milan
+ * @author Milan
+ * This class handles the clickable div and which action will be executed on the object.
+ * The values: @position @size @isDebugHitBoxVisible are edited at the @class GameObject.ts and its children.
+ */
+export class HitBox {
+    /** Alias of the action defined in the @type ActionAlias at the @class GameObject and its children */
+    private _actionAlias: string;
+    /** Alias of the gameObject defined in the @type ActionAlias at the @class GameObject and its children */
+    private _gameObjectAlias: string;
+    /** Reference of the canvas of the game */
+    private _canvasRef: CanvasComponent;
+    /** Div of the hitbox where the player can click the element */
+    public _hitboxDiv: HTMLDivElement = document.createElement("div");
+    /** Store original position and size for responsive scaling */
+    private _originalPosition: Vector2;
+    private _originalSize: Vector2;
+    /** Reference to the header element for positioning */
+    private _headerElement: HTMLElement | null = null;
+    /** Store bound function reference for cleanup */
+    private _updatePositionBound: () => void;
+
+    /** Gets all the values from the @class CanvasComponent since its created there */
+    public constructor(position: Vector2, size: Vector2, isDebugHitboxVisible: boolean,
+        canvas: CanvasComponent, actionAlias: string, gameObjectAlias: string) {
+        this._actionAlias = actionAlias;
+        this._gameObjectAlias = gameObjectAlias;
+        this._canvasRef = canvas;
+        this._originalPosition = { x: position.x, y: position.y };
+        this._originalSize = { x: size.x, y: size.y };
+        this._updatePositionBound = (): void => {
+            setTimeout(() => this.updateHitboxPosition(), 50);
+        };
+        this.createHitBox(isDebugHitboxVisible);
+        this.setupResponsiveListeners();
+    }
+
+    private createHitBox(isDebugHitboxVisible: boolean): void {
+        if (isDebugHitboxVisible) {
+            this._hitboxDiv.style.backgroundColor = "pink";
+        }
+
+        const baseZIndex: number = 10;
+        const zIndexRange: number = 30;
+        const normalizedY: number = Math.max(0, Math.min(1, (1022 - this._originalPosition.y) / 1022));
+        const calculatedZIndex: number = Math.floor(baseZIndex + (normalizedY * zIndexRange));
+
+        this._hitboxDiv.style.zIndex = calculatedZIndex.toString();
+        this._hitboxDiv.style.position = "absolute"; // <-- absolute, not fixed
+        this._hitboxDiv.style.opacity = "0.5";
+        this._hitboxDiv.style.pointerEvents = "auto";
+        this._hitboxDiv.style.cursor = "pointer";
+
+        const shadowRoot: ShadowRoot | null = this._canvasRef.shadowRoot;
+        if (shadowRoot) {
+            this._headerElement = shadowRoot.querySelector(".header");
+        }
+
+        this.updateHitboxPosition();
+
+        // Append to the header (image container), not document.body
+        if (this._headerElement) {
+            this._headerElement.appendChild(this._hitboxDiv);
+        }
+
+        this._hitboxDiv.addEventListener("click", () => void this.clicked());
+    }
+
+    /** Updates hitbox position and size based on current viewport and image scaling */
+    private updateHitboxPosition(): void {
+        if (!this._headerElement) return;
+
+        const headerImage: HTMLImageElement | null = this._headerElement.querySelector("img");
+        if (!headerImage) return;
+
+        const originalImageWidth: number = 1022;
+
+        // The image's actual rendered width
+        const displayedWidth: number = headerImage.getBoundingClientRect().width;
+        const scale: number = displayedWidth / originalImageWidth;
+
+        const scaledWidth: number = this._originalSize.x * scale;
+        const scaledHeight: number = this._originalSize.y * scale;
+        const scaledPosX: number = this._originalPosition.x * scale;
+        const scaledPosY: number = this._originalPosition.y * scale;
+
+        // Position relative to the header container.
+        // The image is centered via CSS (left:50% + translateX(-50%) on mobile,
+        // or just centered via flex). We offset from the image's left edge.
+        const imageRect: DOMRect = headerImage.getBoundingClientRect();
+        const headerRect: DOMRect = this._headerElement.getBoundingClientRect();
+
+        // Image's left edge relative to the header
+        const imageLeftInHeader: number = imageRect.left - headerRect.left;
+
+        this._hitboxDiv.style.width = `${scaledWidth}px`;
+        this._hitboxDiv.style.height = `${scaledHeight}px`;
+        this._hitboxDiv.style.left = `${imageLeftInHeader + (displayedWidth / 2) + scaledPosX}px`;
+        this._hitboxDiv.style.top = `${scaledPosY}px`; // directly relative to header top
+    }
+
+    /** Setup listeners for window resize and orientation change */
+    private setupResponsiveListeners(): void {
+        window.addEventListener("resize", this._updatePositionBound);
+        window.addEventListener("orientationchange", this._updatePositionBound);
+    }
+
+    /** Removes the hitbox from canvas so new hiboxes can be placed after game refreshes */
+    public removeHitBox(): void {
+        window.removeEventListener("resize", this._updatePositionBound);
+        window.removeEventListener("orientationchange", this._updatePositionBound);
+
+        if (this._hitboxDiv.parentNode) {
+            this._hitboxDiv.parentNode.removeChild(this._hitboxDiv);
+        }
+    }
+
+    /** Calls the action of the object by their aliases so it can be executed */
+    private async clicked(): Promise<void> {
+        await this._canvasRef.setHitboxAction(this._actionAlias, this._gameObjectAlias);
+    }
+}
+
+```
+This is the gameObject implementation.
+
+```ts
+export class SafeItem extends Item implements Examine, Open {
+    // Alias of the item used to find the item
+    public static readonly Alias: string = "Safe";
+
+    /**
+     * _position: Position of the item's hitbox
+     * _size: Size of the item's hitbox
+     * _isDebugHitboxVisible: If true, shows the hitbox as a pink square
+     * _action: Action that happens when clicked on the item's hitbox
+     * validActions: Array of the alias of the actions that are possible for this item
      */
-    private async createQuestion(): Promise<void> {
-        try {
-            let idQuestion: number = 0;
-            const loggedIn: LoggedIn = session.get("LoggedIn") as LoggedIn;
-            if (loggedIn.isLoggedIn) {
-                if (!this.inputElement.value) {
-                    alert("Uw antwoord mag niet leeg zijn!");
-                    return; // Exit the function if the description is empty
-                }
-                if (!this.titleElement.value) {
-                    alert("Uw titel mag niet leeg zijn!");
-                    return; // Exit the function if the description is empty
-                }
-
-                const result: boolean = confirm("Weet je zeker of je deze bericht wilt sturen?");
-                if (result) {
-                    if (this.snippetElement.value)
-                        await this.postQuestion(loggedIn, this.titleElement.value,
-                            this.inputElement.value, this.snippetElement.value);
-                    else
-                        await this.postQuestion(loggedIn, this.titleElement.value,
-                            this.inputElement.value, "");
-
-                    // gets id from the answer so it can be used to assign the code tag to the answer
-
-                    const _codeTagTypes: NodeListOf<HTMLInputElement> =
-                    document.querySelectorAll(".tag-container input[type='radio']");
-                    idQuestion = await this.getQuestionId();
-
-                    for (const radio of Array.from(_codeTagTypes)) {
-                        const input: HTMLInputElement = radio;
-                        if (input.checked) {
-                            console.log(input.value);
-                            console.log(idQuestion);
-                            await CodeTag.setCodeTagQuestion(input.value as CODELANGUAGE, idQuestion);
-                        }
-                    }
-
-                    console.log("ANSWER POSTED!");
-                }
-                else
-                    console.log("Post stopped!");
-            }
-            else {
-                alert("Alleen ingelogde gebruikers mogen reageren!");
-                return; // Exit the function for non-logged-in users
-            }
-        }
-        catch (error) {
-            console.error("Error posting answer:", error);
-            alert("Er is een fout opgetreden. Probeer het opnieuw!");
-            return; // Prevent reloading if an error occurred
-        }
-
-        // Reloads the page after login is succesfull
-        location.reload();
-    }
-
-    private async postQuestion(loggedIn: LoggedIn, title: string, description: string, code: string):
-    Promise<void> {
-        try {
-            await Question.setQuestion(title, description, loggedIn.userId, code);
-        }
-        catch (reason) {
-            console.log(reason);
-        }
-    }
-```
-In this function, a new question is created and put into the database.
-
-```ts
-    public static async setQuestion(title: string, description: string, idUser: number, code: string
-    ): Promise<void> {
-        try {
-            await api.queryDatabase(`INSERT INTO question (
-                    title,
-                    description,
-                    idUser,
-                    code) 
-                    VALUES ('${title}', '${description}', '${idUser}', '${code}')`);
-        }
-        catch (reason) {
-            console.error(reason);
-        }
-    }
-```
-## Overview
-
-This is a delete user form function i wrote. I reuse the same form for selecting if the user really wants to delete his account and conformation.
-
-## Typescript
-
-```ts
-    private async onDeleteUser(): Promise<void> {
-        this._formElement?.remove();
-        await User.removeUserById(this._currentUser.id);
-        this.createForm(false, true, "Account verwijderd!");
-    }
-
-        // Opens form for deleting account
-    private onDeleteProfileButton(): void {
-        this.createForm(true, false, "Weet je zeker dat je je account wilt verwijderen?");
-    }
-
-    // Creates a form with a text input field and a submit button
-    private createForm(hasOptions: boolean, canReturnToHomePage: boolean, message: string): void {
-        const formContainer: HTMLDivElement = this.view.parentElement as HTMLDivElement;
-
-        // Creates form element
-        this._formElement = document.createElement("form");
-        this._formElement.innerHTML = message;
-        this._formElement.classList.add("delete-account-container");
-
-        const buttonContainer: HTMLDivElement = document.createElement("div");
-        buttonContainer.className = "delete-options-container";
-        this._formElement.appendChild(buttonContainer);
-
-        // Creates button
-        if (hasOptions) {
-            const yesButton: HTMLButtonElement = document.createElement("button");
-
-            if (canReturnToHomePage)
-                yesButton.addEventListener("click", this.onReturnToHome.bind(this));
-            else
-                console.log("FALSE");
-            yesButton.addEventListener("click", this.onDeleteUser.bind(this));
-
-            yesButton.setAttribute("type", "button"); // Set button type explicitly
-            yesButton.classList.add("button-create-question");
-            yesButton.innerText = "Ja verwijder!";
-
-            const noButton: HTMLButtonElement = document.createElement("button");
-            noButton.addEventListener("click", this.onCloseForm.bind(this));
-            noButton.setAttribute("type", "button"); // Set button type explicitly
-            noButton.classList.add("button-create-question");
-            noButton.innerText = "Nee ga terug!";
-            buttonContainer.appendChild(yesButton);
-            buttonContainer.appendChild(noButton);
-        }
-        else {
-            const yesButton: HTMLButtonElement = document.createElement("button");
-            if (canReturnToHomePage)
-                yesButton.addEventListener("click", this.onReturnToHome.bind(this));
-            else
-                yesButton.addEventListener("click", this.onCloseForm.bind(this));
-
-            yesButton.setAttribute("type", "button"); // Set button type explicitly
-            yesButton.classList.add("button-create-question");
-            yesButton.innerText = "Oké";
-
-            buttonContainer.appendChild(yesButton);
-        }
-
-        if (!this._overlayElement) {
-            this._overlayElement = document.createElement("div");
-            this._overlayElement.className = "overlay";
-            this.view.appendChild(this._overlayElement);
-        }
-
-        // Adds the form as a child to the main container
-        formContainer.appendChild(this._formElement);
-        this.view.appendChild(this._formElement);
-    }
+    public _position: Vector2 = { x: 30, y: 105 };
+    public _size: Vector2 = { x: 70, y: 70 };
+    public _action: ActionTypes = ActionTypes.Examine;
+    public _isDebugHitboxVisible: boolean = false;
+    public static readonly validActions: string[] = ["open"];
 ```

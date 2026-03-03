@@ -24,4 +24,12 @@ export const projects: Project[] = [
     github: "https://github.com/yourname/project-two",
     image: "/images/projects/game/CoverScaled.png",
   },
+  {
+    slug: "project-three",
+    name: "Starshop",
+    description: "Short description of Starshop.",
+    github: "https://github.com/MEvan774/Webshop",
+    image: "/images/projects/webshop/WebshopLanding.png",
+    tech: ["React", "Node.js", "Tailwind"],
+  },
 ];
