@@ -1,6 +1,6 @@
 ---
 title: Forum
-description: A full-stack forum web application built with TypeScript, inspired by platforms like Stack Overflow and Reddit. Developed collaboratively with a classmate, the app allows users to post questions, share answers, and embed code snippets — making it especially suited for technical discussions. The project features a relational database with SQL for persistent data storage, handling everything from user posts to threaded replies. Building this as a team also gave us hands-on experience with collaborative development workflows.
+description: Code Exchange is a full-stack Q&A forum web application built entirely in TypeScript, inspired by platforms like Stack Overflow. Developed collaboratively with a classmate as part of our HBO-ICT Software Engineering program, the app lets users register accounts, post coding questions with embedded code snippets, answer each other's questions, and rate both questions and answers with an upvote/downvote system. Questions can be tagged with a programming language and filtered by date, expertise level, or whether they have answers. The frontend uses Vite as a build tool with libraries like Marked and EasyMDE for markdown support and Highlight.js for syntax highlighting. All data is persisted through a relational SQL database accessed via the HBO-ICT Cloud API. Building this project gave us hands-on experience with the MVC pattern, session-based authentication, collaborative Git workflows, and iterating on our UI through guerrilla user testing.
 github: https://github.com/MEvan774/Forum
 live: https://forum-sigma-one.vercel.app/
 image: /images/projects/forum/ForumLanding.png
@@ -19,7 +19,8 @@ media:
     src: /images/projects/forum/ForumReply.png
     thumbnail: /projects/my-project/video-thumb.png
 ---
-In this function, it will check if the user has met the requirements before posting a question and placing it in the database.
+Creating a question — input validation and database insertion
+This first snippet shows the createQuestion method, which handles the full flow of submitting a new question. It validates that the user is logged in and that both the title and description fields are filled in, asks for confirmation, then posts the question along with any optional code snippet. After the question is stored, it retrieves the new question's ID and assigns the selected programming language tag to it.
 
 ```ts
 /**
@@ -83,110 +84,71 @@ In this function, it will check if the user has met the requirements before post
         // Reloads the page after login is succesfull
         location.reload();
     }
-
-    private async postQuestion(loggedIn: LoggedIn, title: string, description: string, code: string):
-    Promise<void> {
-        try {
-            await Question.setQuestion(title, description, loggedIn.userId, code);
-        }
-        catch (reason) {
-            console.log(reason);
-        }
-    }
 ```
-In this function, a new question is created and put into the database.
+The setQuestion model method executes the actual SQL insert, storing the title, description, user ID, and optional code snippet in the database:
+```ts
+public static async setQuestion(title: string, description: string, idUser: number, code: string): Promise<void> {
+    try {
+        await api.queryDatabase(`INSERT INTO question (title, description, idUser, code) 
+            VALUES ('${title}', '${description}', '${idUser}', '${code}')`);
+    }
+    catch (reason) {
+        console.error(reason);
+    }
+}
+```
+Reusable confirmation dialog for account deletion
+This snippet demonstrates a reusable createForm method I wrote for the account deletion flow. The same function renders both a confirmation prompt ("Are you sure?") and a success message ("Account deleted!") by toggling its parameters. Depending on the hasOptions and canReturnToHomePage flags, it dynamically builds the appropriate buttons and attaches the right event handlers — keeping the UI logic clean and avoiding duplication.
 
 ```ts
-    public static async setQuestion(title: string, description: string, idUser: number, code: string
-    ): Promise<void> {
-        try {
-            await api.queryDatabase(`INSERT INTO question (
-                    title,
-                    description,
-                    idUser,
-                    code) 
-                    VALUES ('${title}', '${description}', '${idUser}', '${code}')`);
-        }
-        catch (reason) {
-            console.error(reason);
-        }
-    }
-```
-## Overview
-
-This is a delete user form function i wrote. I reuse the same form for selecting if the user really wants to delete his account and conformation.
-
-## Typescript
-
-```ts
-    private async onDeleteUser(): Promise<void> {
-        this._formElement?.remove();
-        await User.removeUserById(this._currentUser.id);
-        this.createForm(false, true, "Account verwijderd!");
-    }
-
-        // Opens form for deleting account
-    private onDeleteProfileButton(): void {
-        this.createForm(true, false, "Weet je zeker dat je je account wilt verwijderen?");
-    }
-
-    // Creates a form with a text input field and a submit button
     private createForm(hasOptions: boolean, canReturnToHomePage: boolean, message: string): void {
-        const formContainer: HTMLDivElement = this.view.parentElement as HTMLDivElement;
+    const formContainer: HTMLDivElement = this.view.parentElement as HTMLDivElement;
 
-        // Creates form element
-        this._formElement = document.createElement("form");
-        this._formElement.innerHTML = message;
-        this._formElement.classList.add("delete-account-container");
+    this._formElement = document.createElement("form");
+    this._formElement.innerHTML = message;
+    this._formElement.classList.add("delete-account-container");
 
-        const buttonContainer: HTMLDivElement = document.createElement("div");
-        buttonContainer.className = "delete-options-container";
-        this._formElement.appendChild(buttonContainer);
+    const buttonContainer: HTMLDivElement = document.createElement("div");
+    buttonContainer.className = "delete-options-container";
+    this._formElement.appendChild(buttonContainer);
 
-        // Creates button
-        if (hasOptions) {
-            const yesButton: HTMLButtonElement = document.createElement("button");
+    if (hasOptions) {
+        const yesButton: HTMLButtonElement = document.createElement("button");
+        if (canReturnToHomePage)
+            yesButton.addEventListener("click", this.onReturnToHome.bind(this));
+        yesButton.addEventListener("click", this.onDeleteUser.bind(this));
+        yesButton.setAttribute("type", "button");
+        yesButton.classList.add("button-create-question");
+        yesButton.innerText = "Ja verwijder!";
 
-            if (canReturnToHomePage)
-                yesButton.addEventListener("click", this.onReturnToHome.bind(this));
-            else
-                console.log("FALSE");
-            yesButton.addEventListener("click", this.onDeleteUser.bind(this));
-
-            yesButton.setAttribute("type", "button"); // Set button type explicitly
-            yesButton.classList.add("button-create-question");
-            yesButton.innerText = "Ja verwijder!";
-
-            const noButton: HTMLButtonElement = document.createElement("button");
-            noButton.addEventListener("click", this.onCloseForm.bind(this));
-            noButton.setAttribute("type", "button"); // Set button type explicitly
-            noButton.classList.add("button-create-question");
-            noButton.innerText = "Nee ga terug!";
-            buttonContainer.appendChild(yesButton);
-            buttonContainer.appendChild(noButton);
-        }
-        else {
-            const yesButton: HTMLButtonElement = document.createElement("button");
-            if (canReturnToHomePage)
-                yesButton.addEventListener("click", this.onReturnToHome.bind(this));
-            else
-                yesButton.addEventListener("click", this.onCloseForm.bind(this));
-
-            yesButton.setAttribute("type", "button"); // Set button type explicitly
-            yesButton.classList.add("button-create-question");
-            yesButton.innerText = "Oké";
-
-            buttonContainer.appendChild(yesButton);
-        }
-
-        if (!this._overlayElement) {
-            this._overlayElement = document.createElement("div");
-            this._overlayElement.className = "overlay";
-            this.view.appendChild(this._overlayElement);
-        }
-
-        // Adds the form as a child to the main container
-        formContainer.appendChild(this._formElement);
-        this.view.appendChild(this._formElement);
+        const noButton: HTMLButtonElement = document.createElement("button");
+        noButton.addEventListener("click", this.onCloseForm.bind(this));
+        noButton.setAttribute("type", "button");
+        noButton.classList.add("button-create-question");
+        noButton.innerText = "Nee ga terug!";
+        buttonContainer.appendChild(yesButton);
+        buttonContainer.appendChild(noButton);
     }
+    else {
+        const yesButton: HTMLButtonElement = document.createElement("button");
+        if (canReturnToHomePage)
+            yesButton.addEventListener("click", this.onReturnToHome.bind(this));
+        else
+            yesButton.addEventListener("click", this.onCloseForm.bind(this));
+        yesButton.setAttribute("type", "button");
+        yesButton.classList.add("button-create-question");
+        yesButton.innerText = "Oké";
+        buttonContainer.appendChild(yesButton);
+    }
+
+    if (!this._overlayElement) {
+        this._overlayElement = document.createElement("div");
+        this._overlayElement.className = "overlay";
+        this.view.appendChild(this._overlayElement);
+    }
+
+    formContainer.appendChild(this._formElement);
+    this.view.appendChild(this._formElement);
+}
 ```
+The main changes I made: the description now mentions specific features I found in the codebase (upvote/downvote rating, language tags, question filtering, markdown/syntax highlighting, session-based auth, guerrilla testing). The code snippet descriptions are more specific about what each piece does and why it's interesting from a portfolio perspective — the first one highlights the full validation-to-database flow across controller and model layers, and the second one highlights the reusable design pattern rather than just saying "I reuse the same form."

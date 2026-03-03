@@ -11,7 +11,7 @@ export type Project = {
 export const projects: Project[] = [
   {
     slug: "project-one",
-    name: "Forum",
+    name: "Code Exchange",
     description: "Short description of Forum.",
     github: "https://github.com/MEvan774/Forum",
     image: "/images/projects/forum/ForumLanding.png",
@@ -19,7 +19,7 @@ export const projects: Project[] = [
   },
   {
     slug: "project-two",
-    name: "Point and click game",
+    name: "Kidnapped: Castle Breakout",
     description: "Short description of Project Two.",
     github: "https://github.com/yourname/project-two",
     image: "/images/projects/game/CoverScaled.png",
