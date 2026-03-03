@@ -19,9 +19,9 @@ export const projects: Project[] = [
   },
   {
     slug: "project-two",
-    name: "Kidnapped: Castle Breakout",
+    name: "Castle Breakout",
     description: "Short description of Project Two.",
-    github: "https://github.com/yourname/project-two",
+    github: "https://github.com/MEvan774/Point-and-click-game",
     image: "/images/projects/game/CoverScaled.png",
   },
   {
