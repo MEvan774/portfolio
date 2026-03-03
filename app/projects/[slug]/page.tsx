@@ -11,7 +11,7 @@ import {
   SiCss3,
   SiHtml5,
   SiSharp,
-  SiMicrosoftsqlserver,
+  SiMysql,
 } from "react-icons/si";
 import { FaJava } from "react-icons/fa";
 import CodeBlock from "../../components/codeBlock";
@@ -55,8 +55,7 @@ const ICON_MAP: Record<string, { component: any; color: string }> = {
   html:       { component: SiHtml5,      color: "#E34F26" },
   csharp:     { component: SiSharp,              color: "#512BD4" },
   java:       { component: FaJava,                color: "#ED8B00" },
-  sql:        { component: SiMicrosoftsqlserver,  color: "#CC2927" },
-  mssql:      { component: SiMicrosoftsqlserver,  color: "#CC2927" },
+  sql:        { component: SiMysql,               color: "#CC2927" },
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
