@@ -308,31 +308,31 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
               metalness: 0.1,
             });
             // Attach glow sprite
-           // const glow = createGlowSprite(0xffb300, 1.4);
+            // const glow = createGlowSprite(0xffb300, 1.4);
             // child.add(glow);
             // sunGlowRef.current = glow;
-                        const outlineMaterial = new THREE.MeshBasicMaterial({
+            const outlineMaterial = new THREE.MeshBasicMaterial({
               color: 0xde8400,
               side: THREE.BackSide
             });
-    
-              const outline = new THREE.Group();
-              if (sunRef.current instanceof THREE.Mesh) {
-                const outlineMesh = new THREE.Mesh(
-                  sunRef.current.geometry,
-                  outlineMaterial
-                );
-                outlineMesh.position.copy(new THREE.Vector3(sunRef.current.position.x + 0.03, sunRef.current.position.y, sunRef.current.position.z - 0.01)); // slight offset to prevent z-fighting
-                outlineMesh.rotation.copy(sunRef.current.rotation);
-                outlineMesh.scale.copy(sunRef.current.scale).multiplyScalar(1.1);
-                outline.add(outlineMesh);
-              }
-              
-                          outlineRefSun.current = outline;
-                          scene.add(outline);
-                          scene.add(model);
-                          child.add(outline);
-            
+
+            const outline = new THREE.Group();
+            if (sunRef.current instanceof THREE.Mesh) {
+              const outlineMesh = new THREE.Mesh(
+                sunRef.current.geometry,
+                outlineMaterial
+              );
+              outlineMesh.position.copy(new THREE.Vector3(sunRef.current.position.x + 0.03, sunRef.current.position.y, sunRef.current.position.z - 0.01)); // slight offset to prevent z-fighting
+              outlineMesh.rotation.copy(sunRef.current.rotation);
+              outlineMesh.scale.copy(sunRef.current.scale).multiplyScalar(1.1);
+              outline.add(outlineMesh);
+            }
+
+            outlineRefSun.current = outline;
+            scene.add(outline);
+            scene.add(model);
+            child.add(outline);
+
           }
 
           // --- MOON ---
@@ -354,36 +354,36 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
               color: 0x1e79fe,
               side: THREE.BackSide
             });
-    
-              const outline = new THREE.Group();
-              if (moonRef.current instanceof THREE.Mesh) {
-                const outlineMesh = new THREE.Mesh(
-                  moonRef.current.geometry,
-                  outlineMaterial
-                );
-                outlineMesh.position.copy(new THREE.Vector3(moonRef.current.position.x + 0.04, moonRef.current.position.y, moonRef.current.position.z - 0.01)); // slight offset to prevent z-fighting
-                outlineMesh.rotation.copy(moonRef.current.rotation);
-                outlineMesh.scale.copy(moonRef.current.scale).multiplyScalar(1.1);
-                outline.add(outlineMesh);
-              }
-              
-                          outlineRefMoon.current = outline;
-                          scene.add(outline);
-                          scene.add(model);
-                          child.add(outline);
+
+            const outline = new THREE.Group();
+            if (moonRef.current instanceof THREE.Mesh) {
+              const outlineMesh = new THREE.Mesh(
+                moonRef.current.geometry,
+                outlineMaterial
+              );
+              outlineMesh.position.copy(new THREE.Vector3(moonRef.current.position.x + 0.04, moonRef.current.position.y, moonRef.current.position.z - 0.01)); // slight offset to prevent z-fighting
+              outlineMesh.rotation.copy(moonRef.current.rotation);
+              outlineMesh.scale.copy(moonRef.current.scale).multiplyScalar(1.1);
+              outline.add(outlineMesh);
             }
-          
+
+            outlineRefMoon.current = outline;
+            scene.add(outline);
+            scene.add(model);
+            child.add(outline);
+          }
+
 
 
           // --- DEPTH / DIORAMA MESH (screen inset) ---
           if (name.includes(MESH_NAMES.depth.toLowerCase())) {
             depthRef.current = child;
-                             child.material = new THREE.ShaderMaterial({
-          uniforms: {
-            uTexture: { value: galaxyTexture },
-            uResolution: { value: new THREE.Vector2(container.clientWidth, container.clientHeight) }
-          },
-          vertexShader: `
+            child.material = new THREE.ShaderMaterial({
+              uniforms: {
+                uTexture: { value: galaxyTexture },
+                uResolution: { value: new THREE.Vector2(container.clientWidth, container.clientHeight) }
+              },
+              vertexShader: `
             varying vec4 vScreenPos;
             void main() {
               vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
@@ -391,7 +391,7 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
               vScreenPos = gl_Position;
             }
           `,
-          fragmentShader: `
+              fragmentShader: `
             uniform sampler2D uTexture;
             uniform vec2 uResolution;
             varying vec4 vScreenPos;
@@ -401,9 +401,9 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
               gl_FragColor = texture2D(uTexture, screenUv);
             }
           `,
-          clippingPlanes: [clippingPlaneRef.plane],
-          side: THREE.FrontSide,
-        });
+              clippingPlanes: [clippingPlaneRef.plane],
+              side: THREE.FrontSide,
+            });
           }
         });
 
@@ -469,16 +469,16 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
       if (edgeLinesRef.current && monitorRef.current) {
         edgeLinesRef.current.position.y = monitorRef.current.position.y;
       }
-/*
-      // Pulse glow sprites subtly
-      const glowPulse = 1 + Math.sin(floatOffset.current * 2.5) * 4.12;
-      if (sunGlowRef.current) {
-        sunGlowRef.current.scale.set(1.4 * glowPulse, 1.4 * glowPulse, 1);
-      }
-      if (moonGlowRef.current) {
-        moonGlowRef.current.scale.set(1.2 * glowPulse, 1.2 * glowPulse, 1);
-      }
-*/
+      /*
+            // Pulse glow sprites subtly
+            const glowPulse = 1 + Math.sin(floatOffset.current * 2.5) * 4.12;
+            if (sunGlowRef.current) {
+              sunGlowRef.current.scale.set(1.4 * glowPulse, 1.4 * glowPulse, 1);
+            }
+            if (moonGlowRef.current) {
+              moonGlowRef.current.scale.set(1.2 * glowPulse, 1.2 * glowPulse, 1);
+            }
+      */
       // Update clipping plane to match monitor orientation
       // The plane should sit at the screen face and clip everything behind it
       if (modelGroupRef.current && monitorRef.current) {
@@ -595,12 +595,13 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
                 position: "relative",
                 width: "50px",
                 height: "180px",
-                backgroundColor: "#00AFC7",
-                border: "4px solid #000000",
-                boxShadow: "6px 8px 0px #000000",
+                backgroundColor: isDark ? "#FFFFFF" : "#000000",
+                border: isDark ? "4px solid #00AFC7" : "4px solid #000000",
+                boxShadow: "4px 4px 0px #00AFC7",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
+                fontWeight: "900",
                 zIndex: 999,
               }}
             >
@@ -611,7 +612,7 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
                   textOrientation: "mixed",
                   fontSize: "24px",
                   fontWeight: "900",
-                  color: "#000000",
+                  color: isDark ? "#000000" : "#FFFFFF",
                   letterSpacing: "1px",
                   textTransform: "uppercase",
                   userSelect: "none",
@@ -697,9 +698,9 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
               position: "relative",
               width: "50px",
               height: "180px",
-              backgroundColor: "#00AFC7",
-              border: "4px solid #000000",
-              boxShadow: "6px 8px 0px #000000",
+              backgroundColor: isDark ? "#FFFFFF" : "#000000",
+              border: isDark ? "4px solid #00AFC7" : "4px solid #000000",
+              boxShadow: "4px 4px 0px #00AFC7",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -714,7 +715,7 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
                 textOrientation: "mixed",
                 fontSize: "24px",
                 fontWeight: "900",
-                color: "#000000",
+                color: isDark ? "#000000" : "#FFFFFF",
                 letterSpacing: "1px",
                 textTransform: "uppercase",
                 userSelect: "none",
