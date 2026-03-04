@@ -38,7 +38,12 @@ export default function ProjectMediaGallery({
           />
         ) : (
           <video
+            key={active.src}
             src={active.src}
+            autoPlay
+            muted
+            loop
+            playsInline
             controls
             className="w-full h-full object-contain"
           />
@@ -64,10 +69,9 @@ export default function ProjectMediaGallery({
                 border-4 border-black dark:border-[#00AFC7]
                 rounded-lg overflow-hidden bg-gray-200
                 transition-all duration-100
-                ${
-                  isActive
-                    ? "-translate-x-[1px] -translate-y-[1px] shadow-[4px_4px_0_0_#00AFC7]"
-                    : "opacity-80 hover:opacity-100"
+                ${isActive
+                  ? "-translate-x-[1px] -translate-y-[1px] shadow-[4px_4px_0_0_#00AFC7]"
+                  : "opacity-80 hover:opacity-100"
                 }
               `}
             >
