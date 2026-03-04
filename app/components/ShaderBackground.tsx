@@ -41,6 +41,7 @@ const ShaderBackground = () => {
       uniform vec2 u_resolution;
       uniform float u_time;
       uniform float u_scroll;
+      uniform float u_dpr;
 
       // Random function for node placement
       float random(vec2 st) {
@@ -57,11 +58,14 @@ const ShaderBackground = () => {
         vec2 scrollOffset = vec2(u_time * scrollSpeed, u_time * scrollSpeed);
         
         // Grid calculation with scroll
-        float gridSize = 32.0;
+        // Double grid size and line thickness on mobile (screen width < 768px CSS pixels)
+        float cssWidth = u_resolution.x / u_dpr;
+        float isMobile = step(cssWidth, 768.0); // 1.0 if mobile, 0.0 if desktop
+        float gridSize = mix(32.0, 64.0, isMobile);
         vec2 gridUV = (pixelPos / gridSize) + scrollOffset;
         
         // Manual derivative approximation (works without extension)
-        float lineThickness = 40.0; // Adjust between 50.0 (very thick) and 2.0 (very thin)
+        float lineThickness = mix(40.0, 80.0, isMobile);
         float pixelSize = lineThickness / u_resolution.y;
         vec2 grid = abs(fract(gridUV - 0.5) - 0.5) / pixelSize;
         float line = min(grid.x, grid.y);
@@ -163,6 +167,7 @@ const ShaderBackground = () => {
     const resolutionLocation = gl.getUniformLocation(program, 'u_resolution');
     const timeLocation = gl.getUniformLocation(program, 'u_time');
     const scrollLocation = gl.getUniformLocation(program, 'u_scroll');
+    const dprLocation = gl.getUniformLocation(program, 'u_dpr');
 
     // Handle resize
     const resize = () => {
@@ -188,6 +193,7 @@ const ShaderBackground = () => {
       gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
       gl.uniform1f(timeLocation, time);
       gl.uniform1f(scrollLocation, scrollRef.current);
+      gl.uniform1f(dprLocation, window.devicePixelRatio);
 
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
