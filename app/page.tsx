@@ -62,7 +62,7 @@ export default async function Home() {
 
                 <div className="flex items-center gap-4 justify-center md:justify-start">
                   <a
-                    href="/cv/milan-breuren-cv.pdf"
+                    href="/docs/MilanBreurenCV.pdf"
                     download
                     className="
                       rounded-full
