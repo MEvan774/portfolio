@@ -585,42 +585,42 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
           transition: "opacity 0.3s ease",
         }}
       >
-        {/* Neo-brutalist card – Desktop only */}
-        {!isMobile && (
-          <div style={{ display: "flex", alignItems: "center", pointerEvents: "auto" }}>
+        {/* Neo-brutalist card */}
+        <div style={{ display: "flex", alignItems: "center", pointerEvents: "auto" }}>
+          <div
+            style={{
+              position: "relative",
+              width: isMobile ? "32px" : "50px",
+              height: isMobile ? "100px" : "180px",
+              backgroundColor: isDark ? "#FFFFFF" : "#000000",
+              border: isDark
+                ? `${isMobile ? 2 : 4}px solid #00AFC7`
+                : `${isMobile ? 2 : 4}px solid #000000`,
+              boxShadow: isMobile ? "2px 2px 0px #00AFC7" : "4px 4px 0px #00AFC7",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontWeight: "900",
+              zIndex: 999,
+            }}
+          >
             <div
               style={{
-                position: "relative",
-                width: "50px",
-                height: "180px",
-                backgroundColor: isDark ? "#FFFFFF" : "#000000",
-                border: isDark ? "4px solid #00AFC7" : "4px solid #000000",
-                boxShadow: "4px 4px 0px #00AFC7",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                writingMode: "vertical-lr",
+                transform: "rotate(180deg)",
+                textOrientation: "mixed",
+                fontSize: isMobile ? "14px" : "24px",
                 fontWeight: "900",
-                zIndex: 999,
+                color: isDark ? "#000000" : "#FFFFFF",
+                letterSpacing: "1px",
+                textTransform: "uppercase",
+                userSelect: "none",
               }}
             >
-              <div
-                style={{
-                  writingMode: "vertical-lr",
-                  transform: "rotate(180deg)",
-                  textOrientation: "mixed",
-                  fontSize: "24px",
-                  fontWeight: "900",
-                  color: isDark ? "#000000" : "#FFFFFF",
-                  letterSpacing: "1px",
-                  textTransform: "uppercase",
-                  userSelect: "none",
-                }}
-              >
-                {t("3DToggle.ClickMe")}
-              </div>
+              {t("3DToggle.ClickMe")}
             </div>
           </div>
-        )}
+        </div>
 
         {/* Fallback image */}
         <div
@@ -688,42 +688,42 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
         transition: "opacity 0.3s ease",
       }}
     >
-      {/* Neo-brutalist vertical card – Desktop only */}
-      {!isMobile && (
-        <div style={{ display: "flex", alignItems: "center", pointerEvents: "auto" }}>
+      {/* Neo-brutalist vertical card */}
+      <div style={{ display: "flex", alignItems: "center", pointerEvents: "auto" }}>
+        <div
+          style={{
+            position: "relative",
+            width: isMobile ? "32px" : "50px",
+            height: isMobile ? "100px" : "180px",
+            backgroundColor: isDark ? "#FFFFFF" : "#000000",
+            border: isDark
+              ? `${isMobile ? 2 : 4}px solid #00AFC7`
+              : `${isMobile ? 2 : 4}px solid #000000`,
+            boxShadow: isMobile ? "2px 2px 0px #00AFC7" : "4px 4px 0px #00AFC7",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontWeight: "900",
+            zIndex: 999,
+          }}
+        >
           <div
             style={{
-              position: "relative",
-              width: "50px",
-              height: "180px",
-              backgroundColor: isDark ? "#FFFFFF" : "#000000",
-              border: isDark ? "4px solid #00AFC7" : "4px solid #000000",
-              boxShadow: "4px 4px 0px #00AFC7",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              writingMode: "vertical-lr",
+              transform: "rotate(180deg)",
+              textOrientation: "mixed",
+              fontSize: isMobile ? "14px" : "24px",
               fontWeight: "900",
-              zIndex: 999,
+              color: isDark ? "#000000" : "#FFFFFF",
+              letterSpacing: "1px",
+              textTransform: "uppercase",
+              userSelect: "none",
             }}
           >
-            <div
-              style={{
-                writingMode: "vertical-lr",
-                transform: "rotate(180deg)",
-                textOrientation: "mixed",
-                fontSize: "24px",
-                fontWeight: "900",
-                color: isDark ? "#000000" : "#FFFFFF",
-                letterSpacing: "1px",
-                textTransform: "uppercase",
-                userSelect: "none",
-              }}
-            >
-              {t("3DToggle.ClickMe")}
-            </div>
+            {t("3DToggle.ClickMe")}
           </div>
         </div>
-      )}
+      </div>
 
       {/* 3D container — no canvas here, shared renderer draws into this rect */}
       <div
