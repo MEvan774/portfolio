@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { renderToString } from "react-dom/server";
+import SharedThreeRenderer from "./SharedThreeRenderer";
 
 interface Slab3DProps {
   skillName: string;
@@ -11,6 +12,12 @@ interface Slab3DProps {
   color?: string;
   size?: number;
   rotationSpeed?: number;
+  /**
+   * Optional ref to a parent container element. When set, the 3D
+   * content will be clipped to that element's bounds — preventing
+   * slabs from rendering outside a scrollable card, for example.
+   */
+  clipContainer?: HTMLElement | null;
 }
 
 export default function Slab3D({ 
@@ -18,45 +25,26 @@ export default function Slab3D({
   icon,
   color = "#00AFC7",
   size = 100,
-  rotationSpeed = 0.005 
+  rotationSpeed = 0.005,
+  clipContainer,
 }: Slab3DProps) {
   const mountRef = useRef<HTMLDivElement>(null);
-  const frameRef = useRef<number | undefined>(undefined);
+  const taskIdRef = useRef<string | null>(null);
+  const modelRef = useRef<THREE.Object3D | null>(null);
 
   useEffect(() => {
-    const currentMount: HTMLDivElement | null = mountRef.current;
-    if (currentMount && currentMount.children.length > 0) {
-      return; // Already initialized
-    }
     if (!mountRef.current) return;
 
-    // Scene setup
+    // ── Scene setup (no renderer — shared renderer handles drawing) ──
     const scene = new THREE.Scene();
     
     const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000);
     camera.position.z = 3;
 
-    const renderer = new THREE.WebGLRenderer({ 
-      antialias: true, 
-      alpha: true 
-    });
-    renderer.setSize(size, size);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setClearColor(0x000000, 0);
-    mountRef.current.appendChild(renderer.domElement);
-
-    // Lighting
+    // Lighting — matches your original exactly
     const ambientLight = new THREE.AmbientLight(0xffffff, 5.0);
     scene.add(ambientLight);
-/*
-    const directionalLight1 = new THREE.DirectionalLight(0xffffff, 10.0);
-    directionalLight1.position.set(2, 2, 3);
-    scene.add(directionalLight1);
 
-    const directionalLight2 = new THREE.DirectionalLight(0xffffff, 10.0);
-    directionalLight2.position.set(-2, -1, -1);
-    scene.add(directionalLight2);
-*/
     const modelPath = `/models/IconSlab.glb`;
 
     // Create icon texture from React icon if provided
@@ -67,18 +55,18 @@ export default function Slab3D({
 
     // GLTF Loader
     const gltfLoader = new GLTFLoader();
-    let model: THREE.Object3D | null = null;
     const edgeLines: THREE.LineSegments[] = [];
 
     gltfLoader.load(
       modelPath,
       (gltf) => {
-        model = gltf.scene;
+        const model = gltf.scene;
+        modelRef.current = model;
         scene.add(model);
 
         // Wait for icon texture to load, then apply materials
         iconTexturePromise.then((iconTexture) => {
-          model!.traverse((child) => {
+          model.traverse((child) => {
             if (child instanceof THREE.Mesh) {
               // Dispose of old material
               if (child.material) {
@@ -95,7 +83,7 @@ export default function Slab3D({
                   map: iconTexture,
                   roughness: 100.0,
                   metalness: 0.0,
-                  emissive: 0x111111, // Very slight glow
+                  emissive: 0x111111,
                   emissiveIntensity: 1.00,
                 });
               } else {
@@ -159,7 +147,7 @@ export default function Slab3D({
           
           const fallbackMesh = new THREE.Mesh(geometry, material);
           scene.add(fallbackMesh);
-          model = fallbackMesh;
+          modelRef.current = fallbackMesh;
 
           // Add edges to fallback
           const edges = new THREE.EdgesGeometry(geometry);
@@ -174,31 +162,34 @@ export default function Slab3D({
       }
     );
 
-    // Animation loop
-    const animate = () => {
-      frameRef.current = requestAnimationFrame(animate);
-      
-      if (model) {
-        model.rotation.y += rotationSpeed;
-        // model.rotation.x += rotationSpeed * 0.4;
-      }
-      
-      renderer.render(scene, camera);
-    };
-    animate();
+    // ── Register with shared renderer ────────────────────────
+    const taskId = SharedThreeRenderer.register({
+      scene,
+      camera,
+      domElement: mountRef.current,
+      clipContainer: clipContainer ?? null,
+      onBeforeRender: (_time, _delta) => {
+        if (modelRef.current) {
+          modelRef.current.rotation.y += rotationSpeed;
+        }
+      },
+    });
+    taskIdRef.current = taskId;
 
-    // Cleanup
+    // ── Cleanup ──────────────────────────────────────────────
     return () => {
-      if (frameRef.current) {
-        cancelAnimationFrame(frameRef.current);
+      if (taskIdRef.current) {
+        SharedThreeRenderer.unregister(taskIdRef.current);
+        taskIdRef.current = null;
       }
-      if (mountRef.current && renderer.domElement) {
-        mountRef.current.removeChild(renderer.domElement);
-      }
-      if (currentMount && renderer.domElement && currentMount.contains(renderer.domElement)) {
-        currentMount.removeChild(renderer.domElement);
-      }
-      
+
+      edgeLines.forEach((line) => {
+        line.geometry.dispose();
+        if (line.material instanceof THREE.Material) {
+          line.material.dispose();
+        }
+      });
+
       scene.traverse((object) => {
         if (object instanceof THREE.Mesh) {
           object.geometry?.dispose();
@@ -209,17 +200,8 @@ export default function Slab3D({
           }
         }
       });
-      
-      edgeLines.forEach((line) => {
-        line.geometry.dispose();
-        if (line.material instanceof THREE.Material) {
-          line.material.dispose();
-        }
-      });
-      
-      renderer.dispose();
     };
-  }, [skillName, icon, color, size, rotationSpeed]);
+  }, [skillName, icon, color, size, rotationSpeed, clipContainer]);
 
   return (
     <div 

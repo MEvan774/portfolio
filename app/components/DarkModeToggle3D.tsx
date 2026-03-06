@@ -4,6 +4,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three-stdlib";
 import { useTheme } from "../hooks/UseTheme";
 import { useLanguage } from "@/app/hooks/UseLanguage";
+import SharedThreeRenderer from "./SharedThreeRenderer";
 
 /* ──────────────────────────────────────────────
    Mesh names expected inside the .glb file.
@@ -149,10 +150,9 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
   style,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const taskIdRef = useRef<string | null>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
-  const animationIdRef = useRef<number | null>(null);
 
   // Mesh refs
   const monitorRef = useRef<THREE.Object3D | null>(null);
@@ -181,6 +181,11 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
   const [isMobile, setIsMobile] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [loadError, setLoadError] = useState(false);
+
+  // Clipping plane ref (shared across the effect)
+  const clippingPlaneRef = useRef<{ plane: THREE.Plane }>({
+    plane: new THREE.Plane(new THREE.Vector3(0, 0, -1), 0),
+  });
 
   const { t } = useLanguage();
   const { isDark, toggle, mounted } = useTheme();
@@ -221,22 +226,8 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
     camera.position.z = 5;
     cameraRef.current = camera;
 
-    // Renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setClearColor(0x000000, 0);
-    renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
-    container.appendChild(renderer.domElement);
-    rendererRef.current = renderer;
-
-    // Clipping plane — will be positioned at the monitor screen face
-    // to prevent the depth cone from being visible from behind
-    const clippingPlane = new THREE.Plane(new THREE.Vector3(0, 0, -1), 0);
-    const clippingPlaneRef = { plane: clippingPlane };
-
-    renderer.localClippingEnabled = true;
+    // Galaxy texture (created once)
+    const galaxyTexture = createGalaxyTexture();
 
     // Ambient light (soft fill)
     scene.add(new THREE.AmbientLight(0xffffff, 0.8));
@@ -264,9 +255,6 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
         model.rotation.y = 200.6; // preserve your original rotation
         modelGroupRef.current = model;
 
-        // Galaxy texture (created once)
-        const galaxyTexture = createGalaxyTexture();
-
         // Edge lines group
         const edgeGroup = new THREE.Group();
 
@@ -278,7 +266,6 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
           // --- MONITOR ---
           if (name.includes(MESH_NAMES.monitor.toLowerCase())) {
             monitorRef.current = child;
-            // White material + black wireframe edges
             child.material = new THREE.MeshStandardMaterial({
               color: 0xffffff,
               emissive: 0xffa000,
@@ -286,11 +273,9 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
               metalness: 0.05,
             });
 
-            // Create black edge lines using EdgesGeometry
-            const edges = new THREE.EdgesGeometry(child.geometry, 30); // threshold angle 30°
+            const edges = new THREE.EdgesGeometry(child.geometry, 30);
             const lineMat = new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 2 });
             const lineSegments = new THREE.LineSegments(edges, lineMat);
-            // Copy transform from mesh
             lineSegments.position.copy(child.position);
             lineSegments.rotation.copy(child.rotation);
             lineSegments.scale.copy(child.scale);
@@ -307,13 +292,10 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
               roughness: 0.3,
               metalness: 0.1,
             });
-            // Attach glow sprite
-            // const glow = createGlowSprite(0xffb300, 1.4);
-            // child.add(glow);
-            // sunGlowRef.current = glow;
+
             const outlineMaterial = new THREE.MeshBasicMaterial({
               color: 0xde8400,
-              side: THREE.BackSide
+              side: THREE.BackSide,
             });
 
             const outline = new THREE.Group();
@@ -322,7 +304,13 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
                 sunRef.current.geometry,
                 outlineMaterial
               );
-              outlineMesh.position.copy(new THREE.Vector3(sunRef.current.position.x + 0.03, sunRef.current.position.y, sunRef.current.position.z - 0.01)); // slight offset to prevent z-fighting
+              outlineMesh.position.copy(
+                new THREE.Vector3(
+                  sunRef.current.position.x + 0.03,
+                  sunRef.current.position.y,
+                  sunRef.current.position.z - 0.01
+                )
+              );
               outlineMesh.rotation.copy(sunRef.current.rotation);
               outlineMesh.scale.copy(sunRef.current.scale).multiplyScalar(1.1);
               outline.add(outlineMesh);
@@ -332,7 +320,6 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
             scene.add(outline);
             scene.add(model);
             child.add(outline);
-
           }
 
           // --- MOON ---
@@ -345,14 +332,10 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
               roughness: 0.4,
               metalness: 0.15,
             });
-            // Attach glow sprite
-            // const glow = createGlowSprite(0x64b5f6, 1.2);
-            // child.add(glow);
-            // moonGlowRef.current = glow;
-            // Create solid white outline using inverted hull technique
+
             const outlineMaterial = new THREE.MeshBasicMaterial({
               color: 0x1e79fe,
-              side: THREE.BackSide
+              side: THREE.BackSide,
             });
 
             const outline = new THREE.Group();
@@ -361,7 +344,13 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
                 moonRef.current.geometry,
                 outlineMaterial
               );
-              outlineMesh.position.copy(new THREE.Vector3(moonRef.current.position.x + 0.04, moonRef.current.position.y, moonRef.current.position.z - 0.01)); // slight offset to prevent z-fighting
+              outlineMesh.position.copy(
+                new THREE.Vector3(
+                  moonRef.current.position.x + 0.04,
+                  moonRef.current.position.y,
+                  moonRef.current.position.z - 0.01
+                )
+              );
               outlineMesh.rotation.copy(moonRef.current.rotation);
               outlineMesh.scale.copy(moonRef.current.scale).multiplyScalar(1.1);
               outline.add(outlineMesh);
@@ -373,35 +362,35 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
             child.add(outline);
           }
 
-
-
           // --- DEPTH / DIORAMA MESH (screen inset) ---
           if (name.includes(MESH_NAMES.depth.toLowerCase())) {
             depthRef.current = child;
             child.material = new THREE.ShaderMaterial({
               uniforms: {
                 uTexture: { value: galaxyTexture },
-                uResolution: { value: new THREE.Vector2(container.clientWidth, container.clientHeight) }
+                uResolution: {
+                  value: new THREE.Vector2(container.clientWidth, container.clientHeight),
+                },
               },
               vertexShader: `
-            varying vec4 vScreenPos;
-            void main() {
-              vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-              gl_Position = projectionMatrix * mvPosition;
-              vScreenPos = gl_Position;
-            }
-          `,
+                varying vec4 vScreenPos;
+                void main() {
+                  vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                  gl_Position = projectionMatrix * mvPosition;
+                  vScreenPos = gl_Position;
+                }
+              `,
               fragmentShader: `
-            uniform sampler2D uTexture;
-            uniform vec2 uResolution;
-            varying vec4 vScreenPos;
+                uniform sampler2D uTexture;
+                uniform vec2 uResolution;
+                varying vec4 vScreenPos;
 
-            void main() {
-              vec2 screenUv = (vScreenPos.xy / vScreenPos.w) * 0.5 + 0.5;
-              gl_FragColor = texture2D(uTexture, screenUv);
-            }
-          `,
-              clippingPlanes: [clippingPlaneRef.plane],
+                void main() {
+                  vec2 screenUv = (vScreenPos.xy / vScreenPos.w) * 0.5 + 0.5;
+                  gl_FragColor = texture2D(uTexture, screenUv);
+                }
+              `,
+              clippingPlanes: [clippingPlaneRef.current.plane],
               side: THREE.FrontSide,
             });
           }
@@ -412,7 +401,6 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
         scene.add(model);
 
         // Set initial sun/moon visibility based on current theme
-        // isDark at load time: show moon, hide sun. Light mode: show sun, hide moon.
         if (sunRef.current) sunRef.current.visible = !isDarkRef.current;
         if (moonRef.current) moonRef.current.visible = isDarkRef.current;
 
@@ -427,81 +415,83 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
       }
     );
 
-    // ─── Animation loop ───
-    const animate = () => {
-      animationIdRef.current = requestAnimationFrame(animate);
+    // ── Register with shared renderer ────────────────────────
+    const taskId = SharedThreeRenderer.register({
+      scene,
+      camera,
+      domElement: container,
+      localClipping: true, // needed for the depth mesh clipping plane
+      onBeforeRender: (_time, _delta) => {
+        floatOffset.current += FLOAT_SPEED;
+        const targetY = Math.sin(floatOffset.current) * FLOAT_AMPLITUDE;
+        monitorFloatY.current = targetY;
 
-      floatOffset.current += FLOAT_SPEED;
-      const targetY = Math.sin(floatOffset.current) * FLOAT_AMPLITUDE;
-      monitorFloatY.current = targetY;
+        // Smooth trailing for sun / moon
+        sunTrailY.current += (targetY - sunTrailY.current) * (1 - TRAIL_LAG);
+        moonTrailY.current += (targetY - moonTrailY.current) * (1 - TRAIL_LAG);
 
-      // Smooth trailing for sun / moon
-      sunTrailY.current += (targetY - sunTrailY.current) * (1 - TRAIL_LAG);
-      moonTrailY.current += (targetY - moonTrailY.current) * (1 - TRAIL_LAG);
+        // Apply float to individual meshes (relative offsets)
+        if (monitorRef.current) {
+          const baseY =
+            monitorRef.current.userData._baseY ?? monitorRef.current.position.y;
+          if (monitorRef.current.userData._baseY === undefined)
+            monitorRef.current.userData._baseY = baseY;
+          monitorRef.current.position.y = baseY + targetY;
+        }
+        if (depthRef.current) {
+          const baseY =
+            depthRef.current.userData._baseY ?? depthRef.current.position.y;
+          if (depthRef.current.userData._baseY === undefined)
+            depthRef.current.userData._baseY = baseY;
+          depthRef.current.position.y = baseY + targetY;
+        }
+        if (sunRef.current) {
+          const baseY =
+            sunRef.current.userData._baseY ?? sunRef.current.position.y;
+          if (sunRef.current.userData._baseY === undefined)
+            sunRef.current.userData._baseY = baseY;
+          sunRef.current.position.y = baseY + sunTrailY.current;
+        }
+        if (moonRef.current) {
+          const baseY =
+            moonRef.current.userData._baseY ?? moonRef.current.position.y;
+          if (moonRef.current.userData._baseY === undefined)
+            moonRef.current.userData._baseY = baseY;
+          moonRef.current.position.y = baseY + moonTrailY.current;
+        }
 
-      // Apply float to individual meshes (relative offsets)
-      if (monitorRef.current) {
-        const baseY = monitorRef.current.userData._baseY ?? monitorRef.current.position.y;
-        if (monitorRef.current.userData._baseY === undefined)
-          monitorRef.current.userData._baseY = baseY;
-        monitorRef.current.position.y = baseY + targetY;
-      }
-      if (depthRef.current) {
-        const baseY = depthRef.current.userData._baseY ?? depthRef.current.position.y;
-        if (depthRef.current.userData._baseY === undefined)
-          depthRef.current.userData._baseY = baseY;
-        depthRef.current.position.y = baseY + targetY;
-      }
-      if (sunRef.current) {
-        const baseY = sunRef.current.userData._baseY ?? sunRef.current.position.y;
-        if (sunRef.current.userData._baseY === undefined)
-          sunRef.current.userData._baseY = baseY;
-        sunRef.current.position.y = baseY + sunTrailY.current;
-      }
-      if (moonRef.current) {
-        const baseY = moonRef.current.userData._baseY ?? moonRef.current.position.y;
-        if (moonRef.current.userData._baseY === undefined)
-          moonRef.current.userData._baseY = baseY;
-        moonRef.current.position.y = baseY + moonTrailY.current;
-      }
+        // Keep edge lines synced with monitor
+        if (edgeLinesRef.current && monitorRef.current) {
+          edgeLinesRef.current.position.y = monitorRef.current.position.y;
+        }
 
-      // Keep edge lines synced with monitor
-      if (edgeLinesRef.current && monitorRef.current) {
-        edgeLinesRef.current.position.y = monitorRef.current.position.y;
-      }
-      /*
-            // Pulse glow sprites subtly
-            const glowPulse = 1 + Math.sin(floatOffset.current * 2.5) * 4.12;
-            if (sunGlowRef.current) {
-              sunGlowRef.current.scale.set(1.4 * glowPulse, 1.4 * glowPulse, 1);
-            }
-            if (moonGlowRef.current) {
-              moonGlowRef.current.scale.set(1.2 * glowPulse, 1.2 * glowPulse, 1);
-            }
-      */
-      // Update clipping plane to match monitor orientation
-      // The plane should sit at the screen face and clip everything behind it
-      if (modelGroupRef.current && monitorRef.current) {
-        const normal = new THREE.Vector3(0, 0, 1); // screen faces +Z in local space
-        normal.applyQuaternion(modelGroupRef.current.quaternion);
-        const monitorWorldPos = new THREE.Vector3();
-        monitorRef.current.getWorldPosition(monitorWorldPos);
-        clippingPlaneRef.plane.setFromNormalAndCoplanarPoint(normal, monitorWorldPos);
-      }
+        // Update clipping plane to match monitor orientation
+        if (modelGroupRef.current && monitorRef.current) {
+          const normal = new THREE.Vector3(0, 0, 1);
+          normal.applyQuaternion(modelGroupRef.current.quaternion);
+          const monitorWorldPos = new THREE.Vector3();
+          monitorRef.current.getWorldPosition(monitorWorldPos);
+          clippingPlaneRef.current.plane.setFromNormalAndCoplanarPoint(
+            normal,
+            monitorWorldPos
+          );
+        }
+      },
+    });
+    taskIdRef.current = taskId;
 
-      renderer.render(scene, camera);
-    };
-    animate();
-
-    // ─── Resize ───
+    // ─── Resize handler (for depth shader resolution uniform) ───
     const handleResize = () => {
-      if (!containerRef.current) return;
-      camera.aspect = containerRef.current.clientWidth / containerRef.current.clientHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
-
-      if (depthRef.current && depthRef.current instanceof THREE.Mesh && depthRef.current.material instanceof THREE.ShaderMaterial) {
-        depthRef.current.material.uniforms.Uresolution.value.set(containerRef.current.clientWidth, containerRef.current.clientHeight);
+      if (!container) return;
+      if (
+        depthRef.current &&
+        depthRef.current instanceof THREE.Mesh &&
+        depthRef.current.material instanceof THREE.ShaderMaterial
+      ) {
+        depthRef.current.material.uniforms.uResolution.value.set(
+          container.clientWidth,
+          container.clientHeight
+        );
       }
     };
     window.addEventListener("resize", handleResize);
@@ -509,11 +499,21 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
     // ─── Cleanup ───
     return () => {
       window.removeEventListener("resize", handleResize);
-      if (animationIdRef.current !== null) cancelAnimationFrame(animationIdRef.current);
-      if (rendererRef.current && containerRef.current) {
-        containerRef.current.removeChild(rendererRef.current.domElement);
+      if (taskIdRef.current) {
+        SharedThreeRenderer.unregister(taskIdRef.current);
+        taskIdRef.current = null;
       }
-      rendererRef.current?.dispose();
+
+      scene.traverse((obj) => {
+        if (obj instanceof THREE.Mesh) {
+          obj.geometry?.dispose();
+          if (Array.isArray(obj.material)) {
+            obj.material.forEach((m) => m.dispose());
+          } else {
+            obj.material?.dispose();
+          }
+        }
+      });
     };
   }, [modelPath, mounted]);
 
@@ -527,7 +527,7 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
     const startRotation = group.rotation.y;
     const targetRotation = startRotation + Math.PI * 2;
     const startTime = Date.now();
-    let hasSwapped = false; // track if we've swapped sun/moon mid-twirl
+    let hasSwapped = false;
 
     const animateClick = () => {
       const elapsed = Date.now() - startTime;
@@ -543,8 +543,6 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
       // Swap sun/moon visibility at the halfway point of the twirl
       if (progress >= 0.5 && !hasSwapped) {
         hasSwapped = true;
-        // By this point toggle() has already flipped isDark,
-        // so isDarkRef.current reflects the NEW theme
         if (sunRef.current) sunRef.current.visible = !isDarkRef.current;
         if (moonRef.current) moonRef.current.visible = isDarkRef.current;
       }
@@ -727,7 +725,7 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
         </div>
       )}
 
-      {/* 3D canvas container */}
+      {/* 3D container — no canvas here, shared renderer draws into this rect */}
       <div
         ref={containerRef}
         onClick={handleClick}

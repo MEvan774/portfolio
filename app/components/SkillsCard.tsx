@@ -1,64 +1,54 @@
 "use client";
 
-import { useState } from "react";
+import { useState, cloneElement } from "react";
 import { SiTypescript, SiReact, SiNextdotjs, SiHtml5, SiCss3, SiJavascript, SiNodedotjs, SiSharp } from "react-icons/si";
 import { FaJava, FaDatabase } from "react-icons/fa";
 import { useLanguage } from "@/app/hooks/UseLanguage";
-import Slab3D from "./Slab3D";
 
 const SKILLS = [
   {
     label: "HTML",
-    icon: <SiHtml5 size={34} />,
-    color: "#E34F26",
+    icon: <SiHtml5 />,
     categories: ["frontend"],
   },
   {
     label: "CSS",
-    icon: <SiCss3 size={34} />,
-    color: "#1572B6",
+    icon: <SiCss3 />,
     categories: ["frontend"],
   },
   {
     label: "JavaScript",
-    icon: <SiJavascript size={34} />,
-    color: "#F7DF1E",
+    icon: <SiJavascript />,
     categories: ["frontend", "backend"],
   },
   {
     label: "React",
-    icon: <SiReact size={34} />,
-    color: "#61DAFB",
+    icon: <SiReact />,
     categories: ["frontend"],
   },
   {
     label: "Node.js",
-    icon: <SiNodedotjs size={34} />,
-    color: "#339933",
+    icon: <SiNodedotjs />,
     categories: ["backend"],
   },
   {
     label: "Typescript",
-    icon: <SiTypescript size={34} />,
-    color: "#3178C6",
+    icon: <SiTypescript />,
     categories: ["backend", "software"],
   },
   {
     label: "C#",
-    icon: <SiSharp size={34} />,
-    color: "#512BD4",
+    icon: <SiSharp />,
     categories: ["backend", "software"],
   },
   {
     label: "Java",
-    icon: <FaJava size={34} />,
-    color: "#ED8B00",
+    icon: <FaJava />,
     categories: ["backend", "software"],
   },
   {
     label: "SQL",
-    icon: <FaDatabase size={34} />,
-    color: "#CC2927",
+    icon: <FaDatabase />,
     categories: ["backend", "software"],
   },
 ];
@@ -142,7 +132,7 @@ export default function SkillsSection() {
         </select>
       </div>
 
-      {/* Content with 3D Slabs */}
+      {/* Content */}
       <div className="flex-1 overflow-y-scroll p-4 pr-2 scrollbar-gutter-stable">
         <ul className="flex flex-col gap-6">
           {filteredSkills.map((skill) => (
@@ -150,13 +140,17 @@ export default function SkillsSection() {
               key={skill.label}
               className="flex items-center gap-4 font-bold text-black dark:text-[#00AFC7]"
             >
-              <Slab3D 
-                skillName={skill.label}
-                icon={skill.icon}
-                color={skill.color}
-                size={75}
-                rotationSpeed={0.005}
-              />
+              {/* Icon with turquoise backdrop */}
+              <div className="relative shrink-0 w-[50px] h-[50px] flex items-center justify-center">
+                {/* Backdrop: same icon, larger, turquoise, behind */}
+                <span className="absolute inset-0 flex items-center justify-center text-[#00AFC7] dark:text-[#00AFC7] translate-x-0.5 translate-y-0.5">
+                  {cloneElement(skill.icon, { size: 34 })}
+                </span>
+                {/* Foreground: black icon (white in dark mode) */}
+                <span className="relative z-10 text-black dark:text-white">
+                  {cloneElement(skill.icon, { size: 34 })}
+                </span>
+              </div>
               <span className="text-lg">{skill.label}</span>
             </li>
           ))}
