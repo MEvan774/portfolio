@@ -64,7 +64,7 @@ class _SharedThreeRenderer {
     canvas.style.width = "100vw";
     canvas.style.height = "100vh";
     canvas.style.pointerEvents = "none";
-    canvas.style.zIndex = "999";
+    canvas.style.zIndex = "15";
     document.body.appendChild(canvas);
     this.canvas = canvas;
 
