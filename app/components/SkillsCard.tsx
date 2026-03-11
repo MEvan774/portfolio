@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, cloneElement } from "react";
-import { SiTypescript, SiReact, SiNextdotjs, SiHtml5, SiCss3, SiJavascript, SiNodedotjs, SiSharp } from "react-icons/si";
+import { SiTypescript, SiReact, SiNextdotjs, SiHtml5, SiCss3, SiJavascript, SiNodedotjs, SiSharp, SiUnrealengine, SiUnity } from "react-icons/si";
 import { FaJava, FaDatabase } from "react-icons/fa";
 import { useLanguage } from "@/app/hooks/UseLanguage";
 
@@ -39,7 +39,7 @@ const SKILLS = [
   {
     label: "C#",
     icon: <SiSharp />,
-    categories: ["backend", "software"],
+    categories: ["backend", "software", "gamedev"],
   },
   {
     label: "Java",
@@ -50,6 +50,16 @@ const SKILLS = [
     label: "SQL",
     icon: <FaDatabase />,
     categories: ["backend", "software"],
+  },
+  {
+    label: "Unreal Engine",
+    icon: <SiUnrealengine />,
+    categories: ["gamedev"],
+  },
+    {
+    label: "Unity",
+    icon: <SiUnity />,
+    categories: ["gamedev"],
   },
 ];
 
@@ -129,6 +139,7 @@ export default function SkillsSection() {
           <option value="software">Software engineer</option>
           <option value="frontend">Frontend</option>
           <option value="backend">Backend</option>
+          <option value="gamedev">Game dev</option>
         </select>
       </div>
 

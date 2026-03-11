@@ -1,0 +1,41 @@
+---
+title: VR Grapple
+description: A VR grapple hook game built in Unreal Engine 4 using Blueprints as a school exam project. The player wields grapple guns that shoot a line trace — when it hits a surface, a cable attaches and the player is launched toward the grapple point. The launch direction is determined by a sphere collider on the gun that dynamically rotates toward the hit point, solving the problem of the player always launching in the gun's forward direction. Physics couldn't be applied directly to the player pawn (it would cause flipping), so the Launch Character node was used instead. This was my first time working with Unreal Engine 4 and VR development, and the project taught me a lot about spatial math, line tracing, and working within the constraints of a VR controller setup.
+image: /images/projects/vr-grapple/VrGrappleUitleg.jpg
+technologies: ["Unreal Engine"]
+media:
+  - type: video
+    src: /videos/vr-grapple/VREdit.mp4
+    thumbnail: /images/projects/vr-grapple/VRGrapple.jpg
+  - type: image
+    src: /images/projects/vr-grapple/VRGrapple.jpg
+  - type: image
+    src: /images/projects/vr-grapple/VRMainImage.jpg
+---
+*Note: The original project files have been lost, so no GitHub repository is available. The Blueprint screenshots and descriptions below are all that remain of this project.*
+
+Grapple Player — Launch Direction & Sphere Rotation
+The core challenge was getting the player to launch toward the grapple point rather than in the gun's forward direction. The solution uses a sphere collider attached to the gun that rotates to face the line trace hit point. The `GetWorldLocation` of the sphere is subtracted from the `HookPointRight` to get a direction vector, which is then passed through `InverseTransformDirection` and `RotationFromXVector` to produce the correct rotation. On launch, the sphere's forward vector is multiplied by a `GrappleForce` variable and fed into two `LaunchCharacter` calls — one on the local pawn reference and one on the cast motion controller pawn — giving the player a smooth pull toward the target.
+
+The "Set Launch Location" section calculates a velocity-compensated launch vector: it takes the normalized direction from the player's current position to the hook point, computes a dot product with the player's current velocity, scales it by -2.0, and uses the result to counteract momentum that would otherwise overshoot the target.
+
+![Sphere rotation, launch location calculation, and controller feedback](/images/projects/vr-grapple/Launch1.png)
+
+The launch execution casts `GetPlayerPawn` to the `MotionControllerPawn`, and `LaunchCharacter` is called twice — once on the local reference and once on the stored pawn. The launch direction comes from the sphere's forward vector multiplied by `GrappleForce`.
+
+![Launch player to target and launch direction](/images/projects/vr-grapple/Launch2.png)
+
+The sketch below shows the sphere collider mounted on the gun. It rotates to face the grapple hit point so the forward vector always points toward the target, which is then used as the launch direction.
+
+![Sphere collider concept sketch](/images/projects/vr-grapple/VrGrappleUitleg.jpg)
+
+Grapple Line — Line Trace & Cable Attachment
+The grapple line system starts with two Branch checks: one for whether the player is grabbing the trigger, and one to verify a grapple isn't already connected. If both pass, a `LineTraceByChannel` fires from the sphere's world location outward along its forward vector, scaled by a `HookDistance` variable. The trace uses the Visibility channel with Ignore Self enabled.
+
+When the trace hits, a `BreakHitResult` extracts the impact point, which gets stored in `HookPointRight`. The `GrappleConnected` boolean is set to true. On the visual side, the grapple rope (a Cable Component) is first hidden and detached when not in use — `SetAttachEndTo` clears the end point and `SetHiddenInGame` hides it.
+
+![Line trace, hit detection, and cable hiding](/images/projects/vr-grapple/LineTrace1.png)
+
+When a hit is confirmed, the rope is unhidden, a `HookPointObj` actor is spawned at the hit location using `MakeTransform` (with the `HookPointRight` position, zero rotation, and 1.0 scale), and the cable's end is attached to this spawned actor via `SetAttachEndTo`.
+
+![Attach cable to end position](/images/projects/vr-grapple/LineTrace2.png)

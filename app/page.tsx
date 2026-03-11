@@ -136,11 +136,42 @@ export default async function Home() {
                 <SkillsSection />
               </div>
               {/* 2 cols on mobile, 2 on sm, 3 on lg — desktop unchanged */}
-              <section id="projects" className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
-                {projects.map((project) => (
-                  <ProjectCard key={project.slug} project={project} />
-                ))}
-              </section>
+              {/* PROJECTS */}
+              <div id="projects" className="space-y-8">
+
+                {/* Software */}
+                <div>
+                  <div className="inline-flex items-center bg-black border-4 border-black rounded-2xl px-4 py-2 mb-4">
+                    <h2 className="font-black text-lg uppercase text-[#00AFC7] tracking-wide">
+                      Software
+                    </h2>
+                  </div>
+                  <section className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+                    {projects
+                      .filter((p) => p.category === "software")
+                      .map((project) => (
+                        <ProjectCard key={project.slug} project={project} />
+                      ))}
+                  </section>
+                </div>
+
+                {/* Gamedev */}
+                <div>
+                  <div className="inline-flex items-center bg-black border-4 border-black rounded-2xl px-4 py-2 mb-4">
+                    <h2 className="font-black text-lg uppercase text-[#00AFC7] tracking-wide">
+                      Gamedev
+                    </h2>
+                  </div>
+                  <section className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+                    {projects
+                      .filter((p) => p.category === "gamedev")
+                      .map((project) => (
+                        <ProjectCard key={project.slug} project={project} />
+                      ))}
+                  </section>
+                </div>
+
+              </div>
             </div>
           </div>
         </div>

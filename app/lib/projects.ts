@@ -6,6 +6,7 @@ export type Project = {
   live?: string;
   image?: string;
   tech?: string[];
+  category?: "software" | "gamedev";
 };
 
 export const projects: Project[] = [
@@ -16,6 +17,7 @@ export const projects: Project[] = [
     github: "https://github.com/MEvan774/Forum",
     image: "/images/projects/forum/ForumLanding.png",
     tech: ["React", "Node.js", "Tailwind"],
+    category: "software",
   },
   {
     slug: "project-two",
@@ -23,6 +25,7 @@ export const projects: Project[] = [
     description: "Short description of Project Two.",
     github: "https://github.com/MEvan774/Point-and-click-game",
     image: "/images/projects/game/CoverScaled.png",
+    category: "software",
   },
   {
     slug: "project-three",
@@ -31,5 +34,15 @@ export const projects: Project[] = [
     github: "https://github.com/MEvan774/Webshop",
     image: "/images/projects/webshop/WebshopLanding.png",
     tech: ["React", "Node.js", "Tailwind"],
+    category: "software",
+  },
+  {
+  slug: "vr-grapple",
+  name: "VR Grapple",
+  description: "A VR grapple hook game built in Unreal Engine 4.",
+  github: "",
+  image: "/images/projects/vr-grapple/VRGrapple.jpg",
+  tech: ["Unreal Engine 4", "Blueprints"],
+  category: "gamedev",
   },
 ];

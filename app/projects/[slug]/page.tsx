@@ -12,6 +12,7 @@ import {
   SiHtml5,
   SiSharp,
   SiMysql,
+  SiUnrealengine
 } from "react-icons/si";
 import { FaJava } from "react-icons/fa";
 import CodeBlock from "../../components/codeBlock";
@@ -56,6 +57,7 @@ const ICON_MAP: Record<string, { component: any; color: string }> = {
   csharp:     { component: SiSharp,              color: "#512BD4" },
   java:       { component: FaJava,                color: "#ED8B00" },
   sql:        { component: SiMysql,               color: "#CC2927" },
+  "unrealengine":    { component: SiUnrealengine, color: "#313131" },
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
