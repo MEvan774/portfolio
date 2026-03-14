@@ -45,4 +45,13 @@ export const projects: Project[] = [
   tech: ["Unreal Engine 4", "Blueprints"],
   category: "gamedev",
   },
+  {
+  slug: "project-four",
+  name: "Dungeon Gen",
+  description: "Short description of Dungeon Generator.",
+  github: "https://github.com/MEvan774/3DTileMap_DungeonGen",
+  image: "/images/projects/dungeon/Dungeon2.png",
+  tech: ["C#", "Unity"],
+  category: "gamedev",
+  },
 ];
