@@ -54,4 +54,13 @@ export const projects: Project[] = [
   tech: ["C#", "Unity"],
   category: "gamedev",
   },
+    {
+  slug: "project-five",
+  name: "HackAndSlash",
+  description: "Short description of HackAndSlash.",
+  github: "https://github.com/MEvan774/2DHackAndSlash",
+  image: "/images/projects/hack-and-slash/HackAndSlash1.png",
+  tech: ["Unreal"],
+  category: "gamedev",
+  },
 ];
