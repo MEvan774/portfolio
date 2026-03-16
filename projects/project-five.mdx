@@ -14,137 +14,15 @@ media:
 
 Data-driven combo system with input buffering
 This section covers the attack initiation flow in BP_MainCharacter and how AC_CombatComp manages the combo lifecycle. When the player presses attack, the system checks if an attack is already active — if not it starts the combo, if so it queues the input into a buffer. The ComboCounter2D macro then cycles through the weapon's combo array, and during the animation's FollowUpWindow event the buffer is checked to chain the next hit. The entire combo sequence is defined in a PDA_Weapon data asset, so swapping weapons just means pointing to a different asset.
- 
-```
-// BP_MainCharacter — Attack Input
-ON LeftMouseButton Pressed:
-    IF W_Key is held AND is grounded:
-        SET InputAction = UpAttack
-    ELSE:
-        SET InputAction = NormalAttack
- 
-    IF NOT IsAttacking:
-        SET IsAttacking = true
-        DISABLE MovementInput
-        DISABLE TurnInput
-        CALL AC_CombatComp.OnAttacking(InputAction)
-    ELSE:
-        INCREMENT AC_CombatComp.InputBufferAmount
- 
-// AC_CombatComp — OnAttacking
-ON OnAttacking(InputAction):
-    SWITCH InputAction:
-        NormalAttack -> ComboArray = DAWEP.ComboA
-        UpAttack     -> ComboArray = [DAWEP.UpAttack]
-    CALL ComboCounter2D(ComboArray)
- 
-// AC_CombatComp — ComboCounter2D Macro
-MACRO ComboCounter2D(ComboArray):
-    IF DAWEP is NOT valid: RETURN
-    IF AttackNum > ComboArray.Length: RETURN
- 
-    AnimSequence = ComboArray[AttackNum]
-    CALL Owner.SetAttackSequence(AnimSequence)   // via BPI_AttackValues
-    CALL AnimComponent.JumpToNode("Attacking")
-    INCREMENT AttackNum
- 
-// Animation Event — FollowUpWindow
-ON FollowUpWindow:
-    IF AC_CombatComp.InputBufferAmount > 0:
-        DECREMENT InputBufferAmount
-        CALL AC_CombatComp.OnAttacking(CurrentInputAction)
-```
- 
+BP_MainCharacter — Attack input handling, IsAttacking check, input buffer, W-key directional check, and AC_CombatComp.OnAttacking call:
+
+<BlueprintViewer id="urs91efg" height="500px" />
+
 Animation-event hitboxes and hit impact feedback
 Hit detection is driven by animation events rather than input timing. Each attack animation fires an AttackWindow event at the exact frames where the hitbox should be active, which triggers a box trace forward from the character. Hit actors are tracked with AddUnique to prevent duplicate damage per swing. On hit, the system applies damage, spawns a Niagara particle effect, plays an impact sound, and fires the hit stop system — a brief time dilation freeze that both the attacker and the enemy run independently. A camera shake and a sprite shake (rapid X-position oscillation on the enemy flipbook) layer on top, all gated behind a DoOnce so feedback only triggers once per swing.
- 
-```
-// Animation Event — AttackWindow (fires at specific animation frames)
-ON AttackWindow:
-    TraceStart = ActorLocation
-    TraceEnd   = ActorLocation + (ForwardVector * 90)
-    HitResult  = BoxTraceSingle(TraceStart, TraceEnd, HalfSize(80, 10, 45))
- 
-    IF HitResult.Actor is valid:
-        ActorsHit.AddUnique(HitResult.Actor)
- 
-        CALL HitResult.Actor.ApplyAttackType(AttackEnum)  // via BPI_AttackValues
-        CALL ApplyDamage(HitResult.Actor, DamageValue)
-        CALL PlaySoundAtLocation(ImpactSound)
-        CALL SpawnNiagaraSystem(ImpactVFX, HitLocation)
- 
-        DO ONCE:
-            CALL StartHitStop(TimeDilation: 0.001, Duration: AttackHitStopTime)
-            CALL PlayWorldCameraShake(CS_Impact)
- 
-// StartHitStop (runs on both attacker and hit enemy)
-FUNCTION StartHitStop(TimeDilation, Duration):
-    SET CustomTimeDilation = TimeDilation    // near-freeze
-    WAIT Duration
-    SET CustomTimeDilation = 1.0            // restore normal speed
- 
-// Enemy — Sprite Shake (triggered alongside hit stop)
-ON HitStop Timeline Start:
-    START LoopingTimer("PawnShake", Interval: 0.05s)
- 
-ON PawnShake Timer Tick:
-    FLIPFLOP:
-        A -> SET FlipbookRelativeX = +10 * TimelineCurveValue
-        B -> SET FlipbookRelativeX = -10 * TimelineCurveValue
- 
-ON HitStop Timeline End:
-    CLEAR PawnShake Timer
-    RESET FlipbookRelativeX = 0
-```
- 
+The hit detection nodes are part of the BP_MainCharacter Attack graph shown above — the AttackWindow event fires the BoxTraceSingle, BreakHitResult extracts the HitActor, AddUnique prevents duplicate hits, then ApplyAttackType (via interface), ApplyDamage, PlaySoundAtLocation, SpawnNiagaraSystem, and the DoOnce-gated StartHitStop + PlayWorldCameraShake chain all execute in sequence.
 GAS-driven enemy reactions and air combat
 Enemy hit reactions use the Gameplay Ability System so each reaction type has its own self-contained logic. The ApplyAttackType interface event switches on Enum_AttackType to activate the right ability — PopUp launches upward, FlyDown slams to the ground, FlyBack cancels current abilities and applies a directional impulse, and Stun checks grounded vs airborne state. On the player side, air attacks freeze aerial momentum by zeroing velocity and disabling falling friction, suspending the character mid-air for the attack duration before restoring physics on completion.
- 
-```
-// Enemy — ApplyAttackType (called via BPI_AttackValues interface)
-ON ApplyAttackType(AttackType):
-    SWITCH AttackType:
-        Stun:
-            IF is grounded:
-                ACTIVATE GA_Stun
-            ELSE:
-                ACTIVATE GA_StunAir         // keeps enemy stunned in air
- 
-        PopUp:
-            ACTIVATE GA_PopUp               // launches enemy upward
- 
-        FlyDown:
-            ACTIVATE GA_FlyDown             // slams enemy to ground
- 
-        KnockBack:
-            CANCEL all current abilities via InputCancel
-            ACTIVATE GA_FlyBack
-            Direction = (EnemyLocation - PlayerLocation).Normalize * -1
-            CALL LaunchCharacter(Direction * 1700 + Z: 300)
- 
-// Enemy — Damage Reception
-ON ReceiveAnyDamage:
-    CALL AC_CombatComp.OnSelfDamaged()
-    CALL AnimComponent.JumpToNode("Damaged")
-    CALL StartHitStop(TimeDilation: 0.001, Duration: 0.2s)
-    CALL CheckHP()
- 
-// Player — ApplyAirAttack (called when W is held during attack)
-FUNCTION ApplyAirAttack():
-    DISABLE TurnInput
-    SAVE CurrentBrakingDeceleration
-    SET BrakingDecelerationFalling = 0
-    SET FallingLateralFriction = 0
-    SET MovementMode = Falling
-    SET Velocity = (0, 0, 0)               // suspend mid-air
- 
-// Animation Event — AttackEnd
-ON AttackEnd:
-    ENABLE MovementInput
-    ENABLE TurnInput
-    SET IsAttacking = false
-    RESTORE BrakingDecelerationFalling
-    IF NOT on ground:
-        SET MovementMode = Falling          // continue air state
-```
- 
+TestEnemy — ApplyAttackType switch, GAS ability activation, damage reception, sprite shake, and knockback:
+
+<BlueprintViewer id="vltsjxut" height="500px" />

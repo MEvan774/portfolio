@@ -23,6 +23,7 @@ import { getServerTranslations } from "../../lib/ServerTranslations";
 import PageReadyNotifier from "../../components/PageReadyNotifier";
 import Slab3D from "../../components/Slab3D";
 import ShaderBackground from "../../components/ShaderBackground";
+import BlueprintViewer from "../../components/BlueprintViewer";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -38,7 +39,7 @@ type MediaItem = {
 
 // ─── MDX Components ───────────────────────────────────────────────────────────
 
-const mdxComponents = { pre: CodeBlock };
+const mdxComponents = { pre: CodeBlock, BlueprintViewer };
 
 // ─── Icon Map ─────────────────────────────────────────────────────────────────
 
