@@ -224,8 +224,8 @@ export default async function ProjectPage({ params }: Props) {
                     >
                       <Github size={24} />
                     </a>
+                    {meta.live && (
                     <a
-                      href={meta.live}
                       target="_blank"
                       rel="noreferrer"
                       className="
@@ -254,6 +254,7 @@ export default async function ProjectPage({ params }: Props) {
                     >
                       Live
                     </a>
+                    )}
                   </div>
                 </div>
               </div>
