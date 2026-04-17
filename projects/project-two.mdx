@@ -1,0 +1,81 @@
+---
+title: Kidnapped Castle Breakout
+description: A browser-based point-and-click escape game called Kidnapped Castle Breakout, built in TypeScript as part of a school project at HBO-ICT. The game uses a component-based architecture with a Web Components frontend and an Express.js backend communicating over HTTPS. Players explore rooms within a castle, interact with objects, solve puzzles, and manage an inventory to ultimately escape. The team worked within a provided game engine framework and extended it with custom systems — I focused on building the interactive hitbox system, a flashlight mechanic, and minigames (like a button-mashing vomit minigame). I also took on the Scrum Master role, organizing sprint planning, stand-ups, and retrospectives to keep the team on track across three sprints.
+github: https://github.com/MEvan774/Point-and-click-game
+live: https://point-and-click-game-api.vercel.app/
+image: /images/projects/game/Cover.png
+technologies: ["TypeScript", "HTML", "CSS", "Node.js"]
+media:
+  - type: video
+    src: /videos/game/CastleBreakoutEdit.mp4
+    thumbnail: /images/projects/game/CoverScaled.png
+  - type: image
+    src: /images/projects/game/Corridor.png
+  - type: image
+    src: /images/projects/game/FreezerSaw.png
+  - type: image
+    src: /images/projects/game/LivingRoomLight.png
+---
+Responsive HitBox System (HitBox.ts)
+This was one of my main contributions. The HitBox class dynamically creates invisible clickable regions over game objects on the canvas. Each hitbox scales and repositions itself responsively based on the rendered image size, so the game works across different screen sizes and orientations. The z-index is calculated from the object's Y-position to create a natural depth ordering. Teammates only needed to set a _position, _size, and _action on their GameObject subclass — the hitbox system handled the rest.
+
+```ts
+/** Updates hitbox position and size based on current viewport and image scaling */
+private updateHitboxPosition(): void {
+    if (!this._headerElement) return;
+
+    const headerImage: HTMLImageElement | null = this._headerElement.querySelector("img");
+    if (!headerImage) return;
+
+    const originalImageWidth: number = 1022;
+    const displayedWidth: number = headerImage.getBoundingClientRect().width;
+    const scale: number = displayedWidth / originalImageWidth;
+
+    const scaledWidth: number = this._originalSize.x * scale;
+    const scaledHeight: number = this._originalSize.y * scale;
+    const scaledPosX: number = this._originalPosition.x * scale;
+    const scaledPosY: number = this._originalPosition.y * scale;
+
+    const imageRect: DOMRect = headerImage.getBoundingClientRect();
+    const headerRect: DOMRect = this._headerElement.getBoundingClientRect();
+    const imageLeftInHeader: number = imageRect.left - headerRect.left;
+
+    this._hitboxDiv.style.width = `${scaledWidth}px`;
+    this._hitboxDiv.style.height = `${scaledHeight}px`;
+    this._hitboxDiv.style.left = `${imageLeftInHeader + (displayedWidth / 2) + scaledPosX}px`;
+    this._hitboxDiv.style.top = `${scaledPosY}px`;
+}
+```
+Simple GameObject Declaration (SafeItem.ts)
+This shows how easy it was for teammates to create new interactable objects thanks to the hitbox system. They just had to define position, size, an action type, and implement the relevant action interfaces (like Examine or Open). The HitBox class picks up these values automatically when the room renders.
+
+```ts
+export class SafeItem extends Item implements Examine, Open {
+    public static readonly Alias: string = "Safe";
+
+    public _position: Vector2 = { x: 30, y: 105 };
+    public _size: Vector2 = { x: 70, y: 70 };
+    public _action: ActionTypes = ActionTypes.Examine;
+    public _isDebugHitboxVisible: boolean = false;
+    public static readonly validActions: string[] = ["open"];
+    // ...
+}
+```
+After the project, i built a full-screen CRT monitor effect using WebGL shaders, giving the game a retro horror atmosphere. It renders scanlines, screen curvature, vignette darkening, noise grain, flicker, and RGB chromatic aberration — all running in real-time as a transparent overlay on top of the game.
+```ts
+// Fragment shader excerpt — combining all CRT post-processing effects
+float scan = scanline(curvedUV);
+float vig = vignette(curvedUV);
+float vignetteEffect = mix(1.0, vig, VIGNETTE_OPACITY);
+float noiseEffect = noise(curvedUV) * NOISE_INTENSITY;
+float flicker = 1.0 + FLICKER_AMOUNT * sin(u_time * FLICKER_SPEED);
+vec3 rgbEffect = rgbShift(curvedUV);
+
+float darkness = scan + noiseEffect;
+darkness *= flicker;
+darkness += (1.0 - vignetteEffect) * 0.5;
+
+vec3 color = vec3(darkness) + rgbEffect;
+float alpha = darkness * 0.4 + (1.0 - vignetteEffect) * 0.3;
+gl_FragColor = vec4(color, alpha);
+```

@@ -1,0 +1,28 @@
+---
+title: 2D Hack & Slash
+description: "A 2D side-scrolling melee combat prototype built in Unreal Engine 5, focused on building a scalable combat architecture from the ground up. The project features a data-driven combo system where weapon data assets define attack chains, an input buffer that queues attacks during active animations and chains them into follow-ups at the right animation frame, and animation-event-driven hitboxes that fire box traces only during designated windows — not on button press. Players can launch enemies into the air and juggle them with directional attacks, while a hit stop system freezes time on impact with configurable per-attack durations paired with camera shake and sprite shake for satisfying feedback. Enemy reactions are driven by the Gameplay Ability System (GAS), supporting four distinct types: stun, pop-up, fly-down, and knockback. The entire combat loop runs through a reusable actor component (AC_CombatComp) built on top of PaperZD for 2D flipbook animation state machines in a constrained 3D space. This is a personal side project focused purely on the combat systems layer — there is no game loop, one weapon, and one enemy type — but the architecture is designed to scale: adding a new weapon is just a new data asset, new attack types extend through an enum and corresponding Gameplay Abilities, and the combat component can be dropped onto any actor with a PaperZD animation setup."
+github: https://github.com/MEvan774/2DHackAndSlash
+image: /images/projects/hack-and-slash/HackAndSlash1.png
+technologies: ["Unreal Engine"]
+media:
+  - type: video
+    src: /videos/hack-and-slash/HackAndSlashEdit.mp4
+    thumbnail: /images/projects/hack-and-slash/HackAndSlash1.png
+  - type: image
+    src: /images/projects/hack-and-slash/HackAndSlash1.png
+---
+
+Data-driven combo system with input buffering
+This section covers the attack initiation flow in BP_MainCharacter and how AC_CombatComp manages the combo lifecycle. When the player presses attack, the system checks if an attack is already active — if not it starts the combo, if so it queues the input into a buffer. The ComboCounter2D macro then cycles through the weapon's combo array, and during the animation's FollowUpWindow event the buffer is checked to chain the next hit. The entire combo sequence is defined in a PDA_Weapon data asset, so swapping weapons just means pointing to a different asset.
+BP_MainCharacter — Attack input handling, IsAttacking check, input buffer, W-key directional check, and AC_CombatComp.OnAttacking call:
+
+<BlueprintViewer id="urs91efg" height="500px" />
+
+Animation-event hitboxes and hit impact feedback
+Hit detection is driven by animation events rather than input timing. Each attack animation fires an AttackWindow event at the exact frames where the hitbox should be active, which triggers a box trace forward from the character. Hit actors are tracked with AddUnique to prevent duplicate damage per swing. On hit, the system applies damage, spawns a Niagara particle effect, plays an impact sound, and fires the hit stop system — a brief time dilation freeze that both the attacker and the enemy run independently. A camera shake and a sprite shake (rapid X-position oscillation on the enemy flipbook) layer on top, all gated behind a DoOnce so feedback only triggers once per swing.
+The hit detection nodes are part of the BP_MainCharacter Attack graph shown above — the AttackWindow event fires the BoxTraceSingle, BreakHitResult extracts the HitActor, AddUnique prevents duplicate hits, then ApplyAttackType (via interface), ApplyDamage, PlaySoundAtLocation, SpawnNiagaraSystem, and the DoOnce-gated StartHitStop + PlayWorldCameraShake chain all execute in sequence.
+GAS-driven enemy reactions and air combat
+Enemy hit reactions use the Gameplay Ability System so each reaction type has its own self-contained logic. The ApplyAttackType interface event switches on Enum_AttackType to activate the right ability — PopUp launches upward, FlyDown slams to the ground, FlyBack cancels current abilities and applies a directional impulse, and Stun checks grounded vs airborne state. On the player side, air attacks freeze aerial momentum by zeroing velocity and disabling falling friction, suspending the character mid-air for the attack duration before restoring physics on completion.
+TestEnemy — ApplyAttackType switch, GAS ability activation, damage reception, sprite shake, and knockback:
+
+<BlueprintViewer id="vltsjxut" height="500px" />

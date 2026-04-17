@@ -1,0 +1,154 @@
+---
+title: Forum
+description: Code Exchange is a full-stack Q&A forum web application built entirely in TypeScript, inspired by platforms like Stack Overflow. Developed collaboratively with a classmate as part of our HBO-ICT Software Engineering program, the app lets users register accounts, post coding questions with embedded code snippets, answer each other's questions, and rate both questions and answers with an upvote/downvote system. Questions can be tagged with a programming language and filtered by date, expertise level, or whether they have answers. The frontend uses Vite as a build tool with libraries like Marked and EasyMDE for markdown support and Highlight.js for syntax highlighting. All data is persisted through a relational SQL database accessed via the HBO-ICT Cloud API. Building this project gave us hands-on experience with the MVC pattern, session-based authentication, collaborative Git workflows, and iterating on our UI through guerrilla user testing.
+github: https://github.com/MEvan774/Forum
+live: https://forum-sigma-one.vercel.app/
+image: /images/projects/forum/ForumLanding.png
+technologies: ["TypeScript", "HTML", "CSS", "SQL"]
+media:
+  - type: video
+    src: /videos/forum/CodeExchangeEdit.mp4
+    thumbnail: /images/projects/forum/ForumLanding.png
+  - type: image
+    src: /images/projects/forum/ForumLanding.png
+  - type: image
+    src: /images/projects/forum/ForumChat.png
+  - type: image
+    src: /images/projects/forum/ForumProfile.png
+  - type: image
+    src: /images/projects/forum/ForumReply.png
+    thumbnail: /projects/my-project/video-thumb.png
+---
+Creating a question — input validation and database insertion
+This first snippet shows the createQuestion method, which handles the full flow of submitting a new question. It validates that the user is logged in and that both the title and description fields are filled in, asks for confirmation, then posts the question along with any optional code snippet. After the question is stored, it retrieves the new question's ID and assigns the selected programming language tag to it.
+
+```ts
+/**
+     * Checks if question input is valid and creates a question
+     * @author Milan
+     */
+    private async createQuestion(): Promise<void> {
+        try {
+            let idQuestion: number = 0;
+            const loggedIn: LoggedIn = session.get("LoggedIn") as LoggedIn;
+            if (loggedIn.isLoggedIn) {
+                if (!this.inputElement.value) {
+                    alert("Uw antwoord mag niet leeg zijn!");
+                    return; // Exit the function if the description is empty
+                }
+                if (!this.titleElement.value) {
+                    alert("Uw titel mag niet leeg zijn!");
+                    return; // Exit the function if the description is empty
+                }
+
+                const result: boolean = confirm("Weet je zeker of je deze bericht wilt sturen?");
+                if (result) {
+                    if (this.snippetElement.value)
+                        await this.postQuestion(loggedIn, this.titleElement.value,
+                            this.inputElement.value, this.snippetElement.value);
+                    else
+                        await this.postQuestion(loggedIn, this.titleElement.value,
+                            this.inputElement.value, "");
+
+                    // gets id from the answer so it can be used to assign the code tag to the answer
+
+                    const _codeTagTypes: NodeListOf<HTMLInputElement> =
+                    document.querySelectorAll(".tag-container input[type='radio']");
+                    idQuestion = await this.getQuestionId();
+
+                    for (const radio of Array.from(_codeTagTypes)) {
+                        const input: HTMLInputElement = radio;
+                        if (input.checked) {
+                            console.log(input.value);
+                            console.log(idQuestion);
+                            await CodeTag.setCodeTagQuestion(input.value as CODELANGUAGE, idQuestion);
+                        }
+                    }
+
+                    console.log("ANSWER POSTED!");
+                }
+                else
+                    console.log("Post stopped!");
+            }
+            else {
+                alert("Alleen ingelogde gebruikers mogen reageren!");
+                return; // Exit the function for non-logged-in users
+            }
+        }
+        catch (error) {
+            console.error("Error posting answer:", error);
+            alert("Er is een fout opgetreden. Probeer het opnieuw!");
+            return; // Prevent reloading if an error occurred
+        }
+
+        // Reloads the page after login is succesfull
+        location.reload();
+    }
+```
+The setQuestion model method executes the actual SQL insert, storing the title, description, user ID, and optional code snippet in the database:
+```ts
+public static async setQuestion(title: string, description: string, idUser: number, code: string): Promise<void> {
+    try {
+        await api.queryDatabase(`INSERT INTO question (title, description, idUser, code) 
+            VALUES ('${title}', '${description}', '${idUser}', '${code}')`);
+    }
+    catch (reason) {
+        console.error(reason);
+    }
+}
+```
+Reusable confirmation dialog for account deletion
+This snippet demonstrates a reusable createForm method I wrote for the account deletion flow. The same function renders both a confirmation prompt ("Are you sure?") and a success message ("Account deleted!") by toggling its parameters. Depending on the hasOptions and canReturnToHomePage flags, it dynamically builds the appropriate buttons and attaches the right event handlers — keeping the UI logic clean and avoiding duplication.
+
+```ts
+    private createForm(hasOptions: boolean, canReturnToHomePage: boolean, message: string): void {
+    const formContainer: HTMLDivElement = this.view.parentElement as HTMLDivElement;
+
+    this._formElement = document.createElement("form");
+    this._formElement.innerHTML = message;
+    this._formElement.classList.add("delete-account-container");
+
+    const buttonContainer: HTMLDivElement = document.createElement("div");
+    buttonContainer.className = "delete-options-container";
+    this._formElement.appendChild(buttonContainer);
+
+    if (hasOptions) {
+        const yesButton: HTMLButtonElement = document.createElement("button");
+        if (canReturnToHomePage)
+            yesButton.addEventListener("click", this.onReturnToHome.bind(this));
+        yesButton.addEventListener("click", this.onDeleteUser.bind(this));
+        yesButton.setAttribute("type", "button");
+        yesButton.classList.add("button-create-question");
+        yesButton.innerText = "Ja verwijder!";
+
+        const noButton: HTMLButtonElement = document.createElement("button");
+        noButton.addEventListener("click", this.onCloseForm.bind(this));
+        noButton.setAttribute("type", "button");
+        noButton.classList.add("button-create-question");
+        noButton.innerText = "Nee ga terug!";
+        buttonContainer.appendChild(yesButton);
+        buttonContainer.appendChild(noButton);
+    }
+    else {
+        const yesButton: HTMLButtonElement = document.createElement("button");
+        if (canReturnToHomePage)
+            yesButton.addEventListener("click", this.onReturnToHome.bind(this));
+        else
+            yesButton.addEventListener("click", this.onCloseForm.bind(this));
+        yesButton.setAttribute("type", "button");
+        yesButton.classList.add("button-create-question");
+        yesButton.innerText = "Oké";
+        buttonContainer.appendChild(yesButton);
+    }
+
+    if (!this._overlayElement) {
+        this._overlayElement = document.createElement("div");
+        this._overlayElement.className = "overlay";
+        this.view.appendChild(this._overlayElement);
+    }
+
+    formContainer.appendChild(this._formElement);
+    this.view.appendChild(this._formElement);
+}
+```
+The main changes I made: the description now mentions specific features I found in the codebase (upvote/downvote rating, language tags, question filtering, markdown/syntax highlighting, session-based auth, guerrilla testing). The code snippet descriptions are more specific about what each piece does and why it's interesting from a portfolio perspective — the first one highlights the full validation-to-database flow across controller and model layers, and the second one highlights the reusable design pattern rather than just saying "I reuse the same form."

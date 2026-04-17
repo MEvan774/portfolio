@@ -1,0 +1,138 @@
+---
+title: 3D Dungeon Generator
+description: "A procedural 3D dungeon generator built in Unity with C#, featuring tile-based level creation with editable parameters and multiple generation algorithms. Inspired by classic roguelike games, the generator assembles dungeon layouts at runtime using modular tile pieces. It supports two distinct dungeon types and uses Prim's algorithm to build a Minimum Spanning Tree between rooms, ensuring all rooms are connected by hallways. All generation parameters — dungeon size, room count, density — are exposed in the Unity Inspector for rapid iteration. A custom object pooling system manages tile instantiation efficiently, reusing inactive objects instead of repeatedly allocating and destroying them."
+github: https://github.com/MEvan774/3DTileMap_DungeonGen
+image: /images/projects/dungeon/Dungeon1.png
+technologies: ["csharp", "Unity"]
+media:
+  - type: video
+    src: /videos/dungeon/DungeonEdit.mp4
+    thumbnail: /images/projects/dungeon/Dungeon1.png
+  - type: image
+    src: /images/projects/dungeon/Dungeon2.png
+  - type: image
+    src: /images/projects/dungeon/Dungeon3.png
+  - type: image
+    src: /images/projects/dungeon/Dungeon4.png
+  - type: image
+    src: /images/projects/dungeon/Dungeon5.png
+---
+Prim's Algorithm — Minimum Spanning Tree (Prim.cs)
+
+The core of the dungeon connectivity system. After rooms are procedurally placed on the grid, Prim's algorithm builds a Minimum Spanning Tree (MST) to determine the shortest set of connections between all main rooms. It starts from a random room, then greedily adds the nearest unconnected room until every room is reachable. The resulting edges are passed to the hallway generator, which carves corridors between each connected pair.
+
+```csharp
+/// Runs Prim's algorithm on the main rooms to create an MST,
+/// then passes the edges to the hallway generator.
+public void RunPrimAlgorithm()
+{
+    allRoomTransforms.Clear();
+    connectedRooms.Clear();
+    edgeStartRooms.Clear();
+    edgeEndRooms.Clear();
+
+    foreach (GameObject roomObject in dungeonData.MainRooms)
+    {
+        allRoomTransforms.Add(roomObject.transform);
+    }
+
+    unconnectedRooms = new List<Transform>(allRoomTransforms);
+
+    // Pick a random starting room
+    Transform startingRoom = allRoomTransforms[Random.Range(0, allRoomTransforms.Count)];
+    AddRoomToMST(startingRoom);
+
+    // Grow the MST until all rooms are connected
+    while (unconnectedRooms.Count > 0)
+    {
+        float shortestDistance = float.MaxValue;
+        Transform nearestUnconnectedRoom = null;
+
+        foreach (Transform connectedRoom in connectedRooms)
+        {
+            foreach (Transform candidateRoom in unconnectedRooms)
+            {
+                float distance = Vector3.Distance(
+                    connectedRoom.position, candidateRoom.position
+                );
+
+                if (distance < shortestDistance)
+                {
+                    shortestDistance = distance;
+                    nearestUnconnectedRoom = candidateRoom;
+                    edgeStartRooms.Add(connectedRoom);
+                    edgeEndRooms.Add(candidateRoom);
+                }
+            }
+        }
+
+        if (nearestUnconnectedRoom != null)
+            AddRoomToMST(nearestUnconnectedRoom);
+    }
+
+    hallwayGenerator.GenerateHallways(
+        edgeStartRooms.ToArray(), edgeEndRooms.ToArray()
+    );
+}
+```
+
+Object Pool Manager (ObjectPoolManager.cs)
+
+To avoid performance spikes from constantly instantiating and destroying tile GameObjects during generation, I built a generic object pooling system. When a tile is no longer needed it gets deactivated and returned to the pool instead of being destroyed. The next time that tile type is requested, the pool reactivates an existing instance rather than calling `Instantiate` again. The pool is organized by type using an enum-based folder structure to keep the hierarchy clean.
+
+```csharp
+public static GameObject SpawnObject(
+    GameObject objectToSpawn,
+    Vector3 spawnPosition,
+    Quaternion spawnRotation,
+    PoolType poolType = PoolType.None)
+{
+    PooledObjectInfo pool = ObjectPools.Find(
+        p => p.LookupString == objectToSpawn.name
+    );
+
+    if (pool == null)
+    {
+        pool = new PooledObjectInfo() { LookupString = objectToSpawn.name };
+        ObjectPools.Add(pool);
+    }
+
+    GameObject spawnableObject = pool.InactiveObjects.FirstOrDefault();
+
+    if (spawnableObject == null)
+    {
+        // No inactive object available — instantiate a new one
+        GameObject parentObject = SetParentObject(poolType);
+        spawnableObject = Instantiate(
+            objectToSpawn, spawnPosition, spawnRotation
+        );
+
+        if (parentObject != null)
+            spawnableObject.transform.SetParent(parentObject.transform);
+    }
+    else
+    {
+        // Reuse an existing inactive object
+        spawnableObject.transform.position = spawnPosition;
+        spawnableObject.transform.rotation = spawnRotation;
+        pool.InactiveObjects.Remove(spawnableObject);
+        spawnableObject.SetActive(true);
+    }
+
+    return spawnableObject;
+}
+
+public static void ReturnObjectToPool(GameObject obj)
+{
+    string goName = obj.name.Substring(0, obj.name.Length - 7);
+    PooledObjectInfo pool = ObjectPools.Find(p => p.LookupString == goName);
+
+    if (pool == null)
+        Debug.LogWarning("Trying to release an object that isn't pooled: " + obj.name);
+    else
+    {
+        obj.SetActive(false);
+        pool.InactiveObjects.Add(obj);
+    }
+}
+```

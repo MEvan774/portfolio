@@ -1,0 +1,146 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+/* fixed navbar layout vars (adjust sizes to match your Navbar) */
+:root {
+  --navbar-height: 4rem;     /* change to actual navbar height */
+  --navbar-top-gap: 1rem;    /* visual gap from top you want to keep */
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-mono: var(--font-crimson-text);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Make IBM Plex Mono the default/site font */
+html, body {
+  font-family: var(--font-ibm-plex-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+}
+
+/* Ensure Tailwind prose and MDX content inherit the site font */
+.prose, .prose * {
+  font-family: inherit !important;
+}
+
+/* Ensure code / pre inside prose and MDX inherit site font */
+.prose code,
+.prose pre,
+.prose pre code,
+code,
+pre {
+  font-family: inherit !important;
+}
+
+/* Optional: if you prefer using the CSS variable instead of .className:
+html, body {
+  font-family: var(--font-geist-sans) !important;
+}
+*/
+
+/* header styles for the fixed wrapper */
+header {
+  height: var(--navbar-height);
+  display: flex;
+  align-items: center;
+}
+
+/* make the main content start below the fixed navbar */
+.has-fixed-navbar main,
+.has-fixed-navbar .page-wrapper { /* .page-wrapper if you wrap your pages */
+  padding-top: calc(var(--navbar-height) + var(--navbar-top-gap));
+}
+
+/* === Neo-Brutalist Scrollbar (Dark-Mode Aware) === */
+::-webkit-scrollbar {
+  width: 14px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-left: 4px solid var(--scrollbar-border);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border: 3px solid var(--scrollbar-track);
+  border-radius: 17px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: var(--scrollbar-thumb);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thick;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+:root {
+  --scrollbar-track: white;
+  --scrollbar-thumb: #000000;
+  --scrollbar-thumb-hover: #111111;
+  --scrollbar-border: #000000;
+}
+
+.dark {
+  --scrollbar-track: black; /* dark slate / near-black */
+  --scrollbar-thumb: #00AFC7; /* light gray */
+  --scrollbar-thumb-hover: #00AFC7;
+  --scrollbar-border: #e5e7eb;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page {
+  animation: fadeIn 0.6s ease-out;
+}
+
+/* Floating animation for hero photo */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+.animate-float {
+  animation: float 16s ease-in-out infinite;
+}
