@@ -22,6 +22,9 @@ import ProjectMediaGallery from "@/app/components/ProjectMediaGallery";
 import { getServerTranslations } from "../../lib/ServerTranslations";
 import PageReadyNotifier from "../../components/PageReadyNotifier";
 import Slab3D from "../../components/Slab3D";
+
+// Toggle 3D tech slabs. Set to true to re-enable the rotating 3D icons.
+const USE_3D_SLABS = false;
 import ShaderBackground from "../../components/ShaderBackground";
 import BlueprintViewer from "../../components/BlueprintViewer";
 
@@ -133,13 +136,28 @@ function TechGrid({ raw }: { raw: any }) {
             key={name}
             className="flex flex-col items-center gap-2 bg-[#E9EDFF] dark:bg-black rounded-2xl border-2 border-black dark:border-[#00AFC7] p-3 shadow-[3px_3px_0_0_#000] dark:shadow-[4px_4px_0_0_#00AFC7] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0_0_#000] dark:hover:shadow-[6px_6px_0_0_#00AFC7]"
           >
-            <Slab3D
-              skillName={name}
-              icon={Icon ? <Icon size={128} /> : undefined}
-              color={match?.color}
-              size={52}
-              rotationSpeed={0.008}
-            />
+            {USE_3D_SLABS ? (
+              <Slab3D
+                skillName={name}
+                icon={Icon ? <Icon size={128} /> : undefined}
+                color={match?.color}
+                size={52}
+                rotationSpeed={0.008}
+              />
+            ) : (
+              <div className="relative w-[52px] h-[52px] flex items-center justify-center">
+                {Icon && (
+                  <>
+                    <span className="absolute inset-0 flex items-center justify-center text-[#00AFC7] translate-x-0.5 translate-y-0.5">
+                      <Icon size={36} />
+                    </span>
+                    <span className="relative z-10 text-black dark:text-white">
+                      <Icon size={36} />
+                    </span>
+                  </>
+                )}
+              </div>
+            )}
             <span className="text-xs font-black uppercase tracking-wide text-black dark:text-[#00AFC7] text-center leading-tight">
               {name}
             </span>
