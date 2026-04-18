@@ -22,7 +22,12 @@
         "emailPlaceholder": "Voer uw e-mail in...",
         "messagePlaceholder": "Voer uw bericht in...",
         "sendMessage": "Verstuur bericht",
-        "pendingMessage": "Versturen..."
+        "pendingMessage": "Versturen...",
+        "successTitle": "Bericht verzonden!",
+        "successBody": "Bedankt voor je bericht — ik neem snel contact met je op.",
+        "errorTitle": "Oeps, er ging iets mis",
+        "errorBody": "Je bericht kon niet worden verzonden. Probeer het zo nog eens.",
+        "popupClose": "Sluiten"
     },
 
     "3DToggle": {

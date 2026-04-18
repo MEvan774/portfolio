@@ -1,12 +1,26 @@
 "use client";
 import { Github, Linkedin, Mail } from "lucide-react";
+import { useRef, useState } from "react";
 import { sendEmail } from "../components/actions/sendEmail";
 import SubmitButton from "../components/SubmitButton";
 import ScrollToTopButton from "./ScrollToTopButton";
+import FormStatusPopup from "./FormStatusPopup";
 import { useLanguage } from "@/app/hooks/UseLanguage";
 
 export default function Footer() {
   const { t } = useLanguage();
+  const formRef = useRef(null);
+  const [status, setStatus] = useState(null);
+
+  async function handleSubmit(formData) {
+    const result = await sendEmail(formData);
+    if (result?.ok) {
+      setStatus("success");
+      formRef.current?.reset();
+    } else {
+      setStatus("error");
+    }
+  }
 
   return (
     <footer id="contact" className="bg-black text-[#00AFC7]">
@@ -59,7 +73,7 @@ export default function Footer() {
                 {t("footer.form")}
               </h3>
 
-              <form action={sendEmail} className="space-y-5">
+              <form ref={formRef} action={handleSubmit} className="space-y-5">
                 <div>
                   <label className="mb-1 block text-sm font-bold text-[#00AFC7]">
                     {t("footer.name")}
@@ -108,6 +122,8 @@ export default function Footer() {
   <ScrollToTopButton />
 </div>
         </div>
+
+      <FormStatusPopup status={status} onClose={() => setStatus(null)} />
     </footer>
   );
 }

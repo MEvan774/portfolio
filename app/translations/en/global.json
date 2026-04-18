@@ -22,7 +22,12 @@
         "emailPlaceholder": "Enter your email...",
         "messagePlaceholder": "Enter your message...",
         "sendMessage": "Send Message",
-        "pendingMessage": "Sending..."
+        "pendingMessage": "Sending...",
+        "successTitle": "Message Sent!",
+        "successBody": "Thanks for reaching out — I'll get back to you soon.",
+        "errorTitle": "Oops, something went wrong",
+        "errorBody": "Your message could not be sent. Please try again in a moment.",
+        "popupClose": "Close"
     },
 
     "3DToggle": {

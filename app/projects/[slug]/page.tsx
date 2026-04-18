@@ -226,9 +226,11 @@ export default async function ProjectPage({ params }: Props) {
                     </a>
                     {meta.live && (
                     <a
+                      href={meta.live}
                       target="_blank"
                       rel="noreferrer"
                       className="
+                        cursor-pointer
                         rounded-3xl
                         border-4
                         border-black
