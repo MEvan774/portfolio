@@ -4,7 +4,6 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { renderToString } from "react-dom/server";
-import SharedThreeRenderer from "./SharedThreeRenderer";
 
 interface Slab3DProps {
   skillName: string;
@@ -13,47 +12,57 @@ interface Slab3DProps {
   size?: number;
   rotationSpeed?: number;
   /**
-   * Optional ref to a parent container element. When set, the 3D
-   * content will be clipped to that element's bounds — preventing
-   * slabs from rendering outside a scrollable card, for example.
+   * Optional ref to a parent container element. Kept for API
+   * compatibility — no longer needed now that each slab renders
+   * in its own local canvas.
    */
   clipContainer?: HTMLElement | null;
 }
 
-export default function Slab3D({ 
-  skillName, 
+export default function Slab3D({
+  skillName,
   icon,
   color = "#00AFC7",
   size = 100,
   rotationSpeed = 0.005,
-  clipContainer,
 }: Slab3DProps) {
   const mountRef = useRef<HTMLDivElement>(null);
-  const taskIdRef = useRef<string | null>(null);
   const modelRef = useRef<THREE.Object3D | null>(null);
 
   useEffect(() => {
-    if (!mountRef.current) return;
+    const mount = mountRef.current;
+    if (!mount) return;
 
-    // ── Scene setup (no renderer — shared renderer handles drawing) ──
+    // ── Scene / Camera / Renderer ─────────────────────────────
     const scene = new THREE.Scene();
-    
+
     const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000);
     camera.position.z = 3;
 
-    // Lighting — matches your original exactly
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x000000, 0);
+    renderer.setSize(size, size, false);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
+
+    const canvas = renderer.domElement;
+    canvas.style.width = `${size}px`;
+    canvas.style.height = `${size}px`;
+    canvas.style.display = "block";
+    mount.appendChild(canvas);
+
+    // Lighting
     const ambientLight = new THREE.AmbientLight(0xffffff, 5.0);
     scene.add(ambientLight);
 
     const modelPath = `/models/IconSlab.glb`;
 
-    // Create icon texture from React icon if provided
     let iconTexturePromise: Promise<THREE.Texture | null> = Promise.resolve(null);
     if (icon) {
       iconTexturePromise = createIconTexture(icon, color);
     }
 
-    // GLTF Loader
     const gltfLoader = new GLTFLoader();
     const edgeLines: THREE.LineSegments[] = [];
 
@@ -64,27 +73,24 @@ export default function Slab3D({
         modelRef.current = model;
         scene.add(model);
 
-        // Wait for icon texture to load, then apply materials
         iconTexturePromise.then((iconTexture) => {
           model.traverse((child) => {
             if (child instanceof THREE.Mesh) {
-              // Dispose of old material
               if (child.material) {
                 if (Array.isArray(child.material)) {
-                  child.material.forEach(mat => mat.dispose());
+                  child.material.forEach((mat) => mat.dispose());
                 } else {
                   child.material.dispose();
                 }
               }
-              
-              // Create material with texture (texture has white background + black icon)
+
               if (iconTexture) {
                 child.material = new THREE.MeshStandardMaterial({
                   map: iconTexture,
                   roughness: 100.0,
                   metalness: 0.0,
                   emissive: 0x111111,
-                  emissiveIntensity: 1.00,
+                  emissiveIntensity: 1.0,
                 });
               } else {
                 child.material = new THREE.MeshStandardMaterial({
@@ -92,68 +98,62 @@ export default function Slab3D({
                   roughness: 100.0,
                   metalness: 0.0,
                   emissive: 0x111111,
-                  emissiveIntensity: 1.00,
+                  emissiveIntensity: 1.0,
                 });
               }
-              
-              // Force material update
+
               child.material.needsUpdate = true;
               child.castShadow = true;
               child.receiveShadow = true;
 
-              // Add black edge outlines using EdgesGeometry
               const edges = new THREE.EdgesGeometry(child.geometry, 30);
-              const lineMaterial = new THREE.LineBasicMaterial({ 
+              const lineMaterial = new THREE.LineBasicMaterial({
                 color: 0x000000,
-                linewidth: 2
+                linewidth: 2,
               });
               const lineSegments = new THREE.LineSegments(edges, lineMaterial);
-              
+
               child.add(lineSegments);
               edgeLines.push(lineSegments);
             }
           });
         });
 
-        // Center the model
         const box = new THREE.Box3().setFromObject(model);
         const center = box.getCenter(new THREE.Vector3());
         model.position.sub(center);
 
-        // Scale model to fit view
         const boxSize = box.getSize(new THREE.Vector3());
         const maxDim = Math.max(boxSize.x, boxSize.y, boxSize.z);
         const scale = 2 / maxDim;
         model.scale.setScalar(scale);
       },
       undefined,
-      (error) => {
+      () => {
         console.warn(`Model not found for ${skillName}, using fallback box`);
-        
-        // Fallback: Create a simple box
+
         iconTexturePromise.then((iconTexture) => {
           const geometry = new THREE.BoxGeometry(1.5, 1.5, 0.3);
-          const material = iconTexture 
-            ? new THREE.MeshStandardMaterial({ 
+          const material = iconTexture
+            ? new THREE.MeshStandardMaterial({
                 map: iconTexture,
                 roughness: 0.5,
                 metalness: 0.1,
               })
-            : new THREE.MeshStandardMaterial({ 
+            : new THREE.MeshStandardMaterial({
                 color: 0xffffff,
                 roughness: 0.5,
                 metalness: 0.1,
               });
-          
+
           const fallbackMesh = new THREE.Mesh(geometry, material);
           scene.add(fallbackMesh);
           modelRef.current = fallbackMesh;
 
-          // Add edges to fallback
           const edges = new THREE.EdgesGeometry(geometry);
-          const lineMaterial = new THREE.LineBasicMaterial({ 
+          const lineMaterial = new THREE.LineBasicMaterial({
             color: 0x000000,
-            linewidth: 2
+            linewidth: 2,
           });
           const lineSegments = new THREE.LineSegments(edges, lineMaterial);
           fallbackMesh.add(lineSegments);
@@ -162,26 +162,20 @@ export default function Slab3D({
       }
     );
 
-    // ── Register with shared renderer ────────────────────────
-    const taskId = SharedThreeRenderer.register({
-      scene,
-      camera,
-      domElement: mountRef.current,
-      clipContainer: clipContainer ?? null,
-      onBeforeRender: (_time, _delta) => {
-        if (modelRef.current) {
-          modelRef.current.rotation.y += rotationSpeed;
-        }
-      },
-    });
-    taskIdRef.current = taskId;
-
-    // ── Cleanup ──────────────────────────────────────────────
-    return () => {
-      if (taskIdRef.current) {
-        SharedThreeRenderer.unregister(taskIdRef.current);
-        taskIdRef.current = null;
+    // ── Render loop ───────────────────────────────────────────
+    let rafId: number | null = null;
+    const tick = () => {
+      if (modelRef.current) {
+        modelRef.current.rotation.y += rotationSpeed;
       }
+      renderer.render(scene, camera);
+      rafId = requestAnimationFrame(tick);
+    };
+    rafId = requestAnimationFrame(tick);
+
+    // ── Cleanup ───────────────────────────────────────────────
+    return () => {
+      if (rafId !== null) cancelAnimationFrame(rafId);
 
       edgeLines.forEach((line) => {
         line.geometry.dispose();
@@ -194,18 +188,23 @@ export default function Slab3D({
         if (object instanceof THREE.Mesh) {
           object.geometry?.dispose();
           if (Array.isArray(object.material)) {
-            object.material.forEach(mat => mat.dispose());
+            object.material.forEach((mat) => mat.dispose());
           } else {
             object.material?.dispose();
           }
         }
       });
+
+      renderer.dispose();
+      if (canvas.parentNode === mount) {
+        mount.removeChild(canvas);
+      }
     };
-  }, [skillName, icon, color, size, rotationSpeed, clipContainer]);
+  }, [skillName, icon, color, size, rotationSpeed]);
 
   return (
-    <div 
-      ref={mountRef} 
+    <div
+      ref={mountRef}
       style={{ width: size, height: size }}
       className="flex items-center justify-center"
       aria-label={skillName}
@@ -214,10 +213,8 @@ export default function Slab3D({
   );
 }
 
-// Helper function to create texture from React icon
-// Creates a white background with black icon overlaid on top
 function createIconTexture(
-  iconElement: React.ReactElement, 
+  iconElement: React.ReactElement,
   color: string
 ): Promise<THREE.Texture> {
   return new Promise((resolve) => {
@@ -233,22 +230,18 @@ function createIconTexture(
       return;
     }
 
-    // Step 1: Fill entire canvas with WHITE background
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(0, 0, size, size);
 
-    // Step 2: Convert React icon to SVG and inject BLACK color
     let iconString = renderToString(iconElement);
-    
-    // Replace all fill/stroke colors with BLACK
+
     iconString = iconString.replace(/fill="[^"]*"/g, `fill="#000000"`);
     iconString = iconString.replace(/stroke="[^"]*"/g, `stroke="#000000"`);
-    
-    // Add fill attribute if it doesn't exist
-    if (!iconString.includes('fill=')) {
-      iconString = iconString.replace('<svg', `<svg fill="#000000"`);
+
+    if (!iconString.includes("fill=")) {
+      iconString = iconString.replace("<svg", `<svg fill="#000000"`);
     }
-    
+
     const img = new Image();
     const svgBlob = new Blob([iconString], { type: "image/svg+xml;charset=utf-8" });
     const url = URL.createObjectURL(svgBlob);
@@ -257,15 +250,13 @@ function createIconTexture(
     texture.colorSpace = THREE.SRGBColorSpace;
 
     img.onload = () => {
-      // Step 3: Draw the BLACK icon on top of the white background
       const iconSize = size * 0.7;
       const offset = (size - iconSize) / 2;
-      
+
       ctx.drawImage(img, offset, offset, iconSize, iconSize);
-      
-      // Update texture
+
       texture.needsUpdate = true;
-      
+
       URL.revokeObjectURL(url);
       resolve(texture);
     };
@@ -275,7 +266,10 @@ function createIconTexture(
       URL.revokeObjectURL(url);
       resolve(texture);
     };
-    
+
     img.src = url;
+
+    // silence unused warn (kept for API compatibility)
+    void color;
   });
 }
