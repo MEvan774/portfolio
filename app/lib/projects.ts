@@ -7,6 +7,8 @@ export type Project = {
   image?: string;
   tech?: string[];
   category?: "software" | "gamedev";
+  award?: boolean;
+  awardText?: string;
 };
 
 export const projects: Project[] = [
@@ -26,6 +28,8 @@ export const projects: Project[] = [
     github: "https://github.com/MEvan774/Point-and-click-game",
     image: "/images/projects/game/CoverScaled.png",
     category: "software",
+    award: true,
+    awardText: "HVA Game Awards: Most Suspenseful 2025",
   },
   {
     slug: "project-three",
@@ -35,6 +39,17 @@ export const projects: Project[] = [
     image: "/images/projects/webshop/WebshopLanding.png",
     tech: ["React", "Node.js", "Tailwind"],
     category: "software",
+  },
+  {
+  slug: "voiceracers",
+  name: "VoiceRacers",
+  description: "A competitive two-player voice-controlled racing game built in Unity.",
+  github: "https://github.com/nikismit/Monobanda-BallVR-source",
+  image: "/images/projects/voiceracers/VoiceRacersCover.jpg",
+  tech: ["Unity", "csharp"],
+  category: "gamedev",
+  award: true,
+  awardText: "Best Game & App Award @ Cinekid Media festival 2023",
   },
   {
   slug: "vr-grapple",

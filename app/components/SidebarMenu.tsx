@@ -24,7 +24,7 @@ export default function SidebarMenu() {
   };
 
   return (
-    <aside className="fixed top-0 left-0 h-full w-64 bg-transparent z-40 hidden lg:block pointer-events-none">
+    <aside className="fixed top-0 left-0 h-full w 54 bg-transparent z-40 hidden lg:block pointer-events-none">
       <div className="flex flex-col h-full pt-24 pb-8 px-6 pointer-events-auto">
         {/* Menu Items */}
         <nav className="flex-1 space-y-4">

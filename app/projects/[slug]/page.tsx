@@ -35,9 +35,10 @@ type Props = {
 };
 
 type MediaItem = {
-  type: "image" | "video";
+  type: "image" | "video" | "unity";
   src: string;
   thumbnail?: string;
+  title?: string;
 };
 
 // ─── MDX Components ───────────────────────────────────────────────────────────

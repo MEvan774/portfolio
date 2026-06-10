@@ -501,7 +501,7 @@ const DarkModeToggle3D: React.FC<DarkModeToggle3DProps> = ({
       renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
 
       if (depthRef.current && depthRef.current instanceof THREE.Mesh && depthRef.current.material instanceof THREE.ShaderMaterial) {
-        depthRef.current.material.uniforms.Uresolution.value.set(containerRef.current.clientWidth, containerRef.current.clientHeight);
+        depthRef.current.material.uniforms.uResolution?.value.set(containerRef.current.clientWidth, containerRef.current.clientHeight);
       }
     };
     window.addEventListener("resize", handleResize);

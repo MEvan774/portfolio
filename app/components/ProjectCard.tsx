@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 // app/components/ProjectCard.tsx
-import { Github } from "lucide-react";
+import { Github, Trophy } from "lucide-react";
 import type { Project } from "./../lib/projects";
 import TransitionLink from "./TransitionLink";
 
@@ -77,38 +77,94 @@ export default function ProjectCard({ project }: Props) {
         </span>
       </div>
 
-      {/* GitHub button – bottom right */}
-      <a
-        href={project.github}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label={`View ${project.name} on GitHub`}
-        className="
-          pointer-events-auto absolute bottom-2 right-2 md:bottom-3 md:right-3
-          rounded-3xl
-          border-2
-          border-black
-          dark:border-[#00AFC7]
-          bg-black
-          dark:bg-[#00AFC7]
-          px-1 py-1
-          text-sm font-black
-          text-white
-          dark:text-black
-          shadow-[4px_4px_0_0_#00AFC7]
-          dark:shadow-[4px_4px_0_0_#000]
-          hover:translate-x-[-3px]
-          hover:translate-y-[-3px]
-          hover:shadow-[8px_8px_0_0_#00AFC7]
-          dark:hover:shadow-[8px_8px_0_0_#000]
-          transition-all
-          uppercase
-          tracking-wider
-        "
-      >
-        <Github size={16} className="md:hidden" />
-        <Github size={24} className="hidden md:block" />
-      </a>
+      {/* Bottom-right action icons */}
+      <div className="pointer-events-none absolute bottom-2 right-2 md:bottom-3 md:right-3 flex items-center gap-2">
+        {project.award && (
+          <span
+            aria-label={
+              project.awardText
+                ? `${project.name} — ${project.awardText}`
+                : `${project.name} won an award`
+            }
+            className="
+              group/award
+              relative
+              pointer-events-auto
+              rounded-3xl
+              border-2
+              border-black
+              dark:border-[#00AFC7]
+              bg-black
+              dark:bg-[#00AFC7]
+              px-1 py-1
+              text-white
+              dark:text-black
+              shadow-[4px_4px_0_0_#00AFC7]
+              dark:shadow-[4px_4px_0_0_#000]
+              transition-all
+            "
+          >
+            <Trophy size={16} className="md:hidden" />
+            <Trophy size={24} className="hidden md:block" />
+
+            {/* Hover tooltip */}
+            <span
+              role="tooltip"
+              className="
+                pointer-events-none
+                absolute bottom-full right-0 mb-2
+                w-56
+                rounded-xl
+                border-2 border-black dark:border-[#00AFC7]
+                bg-black dark:bg-[#00AFC7]
+                px-3 py-2
+                text-[10px] md:text-xs font-black uppercase tracking-wider
+                text-[#00AFC7] dark:text-black
+                shadow-[4px_4px_0_0_#00AFC7] dark:shadow-[4px_4px_0_0_#000]
+                opacity-0 translate-y-1
+                transition-all duration-150
+                group-hover/award:opacity-100 group-hover/award:translate-y-0
+                group-focus-within/award:opacity-100 group-focus-within/award:translate-y-0
+                z-20
+                normal-case
+              "
+            >
+              {project.awardText ?? "Award winner"}
+            </span>
+          </span>
+        )}
+        <a
+          href={project.github}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`View ${project.name} on GitHub`}
+          className="
+            pointer-events-auto
+            rounded-3xl
+            border-2
+            border-black
+            dark:border-[#00AFC7]
+            bg-black
+            dark:bg-[#00AFC7]
+            px-1 py-1
+            text-sm font-black
+            text-white
+            dark:text-black
+            shadow-[4px_4px_0_0_#00AFC7]
+            dark:shadow-[4px_4px_0_0_#000]
+            hover:translate-x-[-3px]
+            hover:translate-y-[-3px]
+            hover:shadow-[8px_8px_0_0_#00AFC7]
+            dark:hover:shadow-[8px_8px_0_0_#000]
+            transition-all
+            uppercase
+            tracking-wider
+          "
+        >
+          <Github size={16} className="md:hidden" />
+          <Github size={24} className="hidden md:block" />
+        </a>
+      </div>
     </div>
   );
 }

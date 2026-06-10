@@ -1,0 +1,68 @@
+---
+title: VoiceRacers
+description: "VoiceRacers is a competitive two-player racing game where your voice is the controller. Players sing, shout or hum their way through the track lower pitches steer left, higher pitches steer right while dodging obstacles, chaining turbo rings for boosts, and managing their breath to stay in control. Built with Monobanda as part of an experimental investigation into playful behavior and greater awareness of our own body, the project explores voice input as a genuinely embodied game mechanic rather than a novelty. I joined the team as the gameplay programmer in Unity (C#), working alongside Niki Smit (lead/game design), Tim Lemmer (art), Jesse van Leeuwen (voice recognition), Finn Stevenhagen (prototype/iteration), and Simon van der Linden (playtesting). The project received a prize for its inventive use of voice as an input modality."
+github: https://github.com/nikismit/Monobanda-BallVR-source
+live: https://monobanda.eu/project/voiceracers
+image: /images/projects/voiceracers/VoiceRacersLanding.png
+technologies: ["Unity", "csharp"]
+media:
+  - type: image
+    src: /images/projects/voiceracers/VoiceRacerPodium.jpg
+  - type: image
+    src: /images/projects/voiceracers/IMG.jpg
+  - type: image
+    src: /images/projects/voiceracers/VoiceRacersSplashArt.jpg
+  - type: image
+    src: /images/projects/voiceracers/ScreenShot1Wide.jpg
+---
+*Note: Media on this page are placeholders drop the final screenshots and gameplay capture into `/public/images/projects/voiceracers/` and `/public/videos/voiceracers/` using the filenames referenced above and they will appear automatically. The playable demo tile loads `/unity/voiceracers/index.html`; replace the contents of `/public/unity/voiceracers/` with your exported Unity WebGL build (`index.html` + `Build/` + `TemplateData/`) and it will play in-page.*
+
+Pitch-to-Steering mapping voice input to lateral movement
+
+The core mechanic translates the player's vocal pitch into a steering value between -1 and 1. A low hum pushes the car to the left, a high note pushes it to the right, and silence lets the car drift straight. To keep the mapping feel natural across different singers, the incoming pitch is normalized against a calibrated neutral range captured at the start of the race, then smoothed with a small buffer so micro-fluctuations in the voice don't cause jitter on the car.
+
+```csharp
+/// Converts a raw pitch reading (Hz) into a normalized steering value in [-1, 1].
+/// neutralPitch is captured during the pre-race calibration.
+public float GetSteeringFromPitch(float rawPitch)
+{
+    if (rawPitch <= 0f) return 0f; // silence or unvoiced frame
+
+    float deviation = (rawPitch - neutralPitch) / pitchRange;
+    float steer = Mathf.Clamp(deviation, -1f, 1f);
+
+    // Smooth across a short ring buffer to hide vibrato / noise.
+    pitchBuffer[bufferIndex] = steer;
+    bufferIndex = (bufferIndex + 1) % pitchBuffer.Length;
+
+    float sum = 0f;
+    for (int i = 0; i < pitchBuffer.Length; i++) sum += pitchBuffer[i];
+    return sum / pitchBuffer.Length;
+}
+```
+
+Breath & Turbo Rings rewarding sustained voicing
+
+Turbo rings scattered along the track give the player a speed boost, but only if the car passes through them *while the player is actively voicing*. This made breath control a real strategic layer players have to decide when to save their breath for a ring versus when to keep steering through a twisty section. The ring uses a trigger collider plus a check against the voice controller's `IsVoicing` flag to decide whether to apply the boost.
+
+```csharp
+private void OnTriggerEnter(Collider other)
+{
+    var car = other.GetComponent<VoiceCar>();
+    if (car == null) return;
+
+    if (car.Voice.IsVoicing)
+    {
+        car.ApplyBoost(boostForce, boostDuration);
+        PlayRingHitEffect(success: true);
+    }
+    else
+    {
+        PlayRingHitEffect(success: false);
+    }
+}
+```
+
+Two-Player Input Routing
+
+Because both players share a single machine, each microphone is bound to its own voice channel at startup and piped into a dedicated `VoiceController` instance. The race manager holds references to both controllers and feeds them into the matching car, keeping the gameplay logic unaware of which physical mic is which it only sees "player 1 voice" and "player 2 voice."
