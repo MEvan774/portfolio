@@ -13,8 +13,6 @@ media:
   - type: image
     src: /images/projects/voiceracers/VoiceRacersSplashArt.jpg
 ---
-*Note: Media on this page are placeholders drop the final screenshots and gameplay capture into `/public/images/projects/voiceracers/` and `/public/videos/voiceracers/` using the filenames referenced above and they will appear automatically. The playable demo tile loads `/unity/voiceracers/index.html`; replace the contents of `/public/unity/voiceracers/` with your exported Unity WebGL build (`index.html` + `Build/` + `TemplateData/`) and it will play in-page.*
-
 Pitch-to-Steering mapping voice input to lateral movement
 
 The core mechanic translates the player's vocal pitch into a steering value between -1 and 1. A low hum pushes the car to the left, a high note pushes it to the right, and silence lets the car drift straight. To keep the mapping feel natural across different singers, the incoming pitch is normalized against a calibrated neutral range captured at the start of the race, then smoothed with a small buffer so micro-fluctuations in the voice don't cause jitter on the car.
